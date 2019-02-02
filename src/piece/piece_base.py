@@ -1,4 +1,3 @@
-from src.grid import Grid
 from src.utils.color import Color
 
 
