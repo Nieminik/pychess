@@ -1,3 +1,4 @@
+"""Tests for src.grid."""
 import pytest
 from src.grid import Grid
 
@@ -10,11 +11,11 @@ x_y_value = (
 
 
 @pytest.fixture
-def grid():
+def grid():  # noqa: D103
     return Grid()
 
 
-def test_grid_init(grid):
+def test_grid_init(grid):  # noqa: D103
     assert len(grid.fields) == 8
 
     for i in range(8):
@@ -22,7 +23,7 @@ def test_grid_init(grid):
 
 
 @pytest.mark.parametrize("x, y, value", x_y_value)
-def test_get_item(x, y, value, grid):
+def test_get_item(x, y, value, grid):  # noqa: D103
     grid.fields[x][y] = value
     assert grid[x][y] == value
     assert grid[(x, y)] == value
@@ -33,7 +34,7 @@ def test_get_item(x, y, value, grid):
 
 
 @pytest.mark.parametrize("x, y, value", x_y_value)
-def test_set_item(x, y, value, grid):
+def test_set_item(x, y, value, grid):  # noqa: D103
     grid[x][y] = value
     assert grid.fields[x][y] == value
 
@@ -48,11 +49,11 @@ def test_set_item(x, y, value, grid):
 
 
 @pytest.mark.parametrize("x_init, y_init, x, y", (
-        (0, 0, 1, 1),
-        (1, 1, 0, 0),
-        (2, 3, 0, 4)
+    (0, 0, 1, 1),
+    (1, 1, 0, 0),
+    (2, 3, 0, 4)
 ))
-def test_move(x_init, y_init, x, y, grid, mocker):
+def test_move(x_init, y_init, x, y, grid, mocker):  # noqa: D103
     fake_piece = mocker.MagicMock()
     fake_piece.x, fake_piece.y = x_init, y_init
     grid[(x_init, y_init)] = fake_piece
@@ -64,11 +65,11 @@ def test_move(x_init, y_init, x, y, grid, mocker):
 
 
 @pytest.mark.parametrize("x, y", (
-        (1, 1),
-        (5, 4),
-        (7, 7)
+    (1, 1),
+    (5, 4),
+    (7, 7)
 ))
-def test_erase(x, y, grid, mocker):
+def test_erase(x, y, grid, mocker):  # noqa: D103
     fake_piece = mocker.MagicMock()
     fake_piece.x, fake_piece.y = x, y
     grid[(x, y)] = fake_piece

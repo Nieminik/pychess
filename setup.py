@@ -1,3 +1,5 @@
+"""pychess setup.py module."""
+
 import setuptools
 
 with open("README.md", "r") as fh:
