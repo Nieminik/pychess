@@ -13,20 +13,12 @@ x_y_value = (
 def grid():
     return Grid()
 
+
 def test_grid_init(grid):
     assert len(grid.fields) == 8
 
     for i in range(8):
         assert len(grid.fields[i]) == 8
-
-
-@pytest.mark.parametrize("x, y, value", x_y_value)
-def test_get_grid(x, y, value):
-    grid = Grid.get_grid()
-    grid[x][y] = value
-    another_grid = Grid.get_grid()
-
-    assert grid[x][y] == another_grid[x][y]
 
 
 @pytest.mark.parametrize("x, y, value", x_y_value)
@@ -76,11 +68,10 @@ def test_move(x_init, y_init, x, y, grid, mocker):
         (5, 4),
         (7, 7)
 ))
-def test_discard(x, y, grid, mocker):
+def test_erase(x, y, grid, mocker):
     fake_piece = mocker.MagicMock()
     fake_piece.x, fake_piece.y = x, y
     grid[(x, y)] = fake_piece
 
-    grid.discard((x, y))
+    grid.erase((x, y))
     assert grid[(x, y)] is None
-

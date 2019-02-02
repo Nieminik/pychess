@@ -14,14 +14,14 @@ class Field(tuple):
 
 class BasePiece(object):
 
-    def __init__(self, x, y, color=Color.WHITE):
+    def __init__(self, x, y, color=Color.WHITE, grid=None):
         self._x = x
         self._y = y
         self.color = color
-        self.grid = Grid.get_grid()
+        self.grid = grid
 
     def __del__(self):
-        self.grid.discard(self.field)
+        self.grid.erase(self.field)
 
     @property
     def field(self):
@@ -47,4 +47,3 @@ class BasePiece(object):
     @y.setter
     def y(self, value):
         self.field = self.x, value
-

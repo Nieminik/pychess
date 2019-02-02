@@ -1,11 +1,12 @@
 import pytest
 
+from src.grid import Grid
 from src.piece.piece_base import BasePiece
 
 
 @pytest.fixture
 def piece():
-    return BasePiece(1, 2, 3)
+    return BasePiece(1, 2, 3, Grid())
 
 
 @pytest.mark.parametrize("x, y, color", (
@@ -14,7 +15,7 @@ def piece():
         (4, 2, 1)
 ))
 def test_piece_init(x, y, color):
-    piece = BasePiece(x, y, color)
+    piece = BasePiece(x, y, color, Grid())
 
     assert piece.x == x
     assert piece.y == y
@@ -61,4 +62,3 @@ def test_delete(piece):
         print(piece)
 
     assert grid[(x, y)] is None
-
