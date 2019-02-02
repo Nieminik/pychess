@@ -1,6 +1,5 @@
 __pycache__
 .tox
 .idea
-*.ini
 venv
 *.egg-info

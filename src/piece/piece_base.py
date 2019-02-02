@@ -8,7 +8,7 @@ class Field(tuple):
         return super(Field, cls).__new__(cls, (x, y))
 
     def __init__(self, x, y):
-        super().__init__()
+        super(Field, self).__init__()
         self.x, self.y = x, y
 
 
