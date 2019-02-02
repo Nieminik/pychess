@@ -4,8 +4,6 @@
 class Grid:
     """Class implementing Grid."""
 
-    _grid_obj = None
-
     def __init__(self):
         self.fields = [[None] * 8] * 8
 
