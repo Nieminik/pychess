@@ -10,20 +10,20 @@ def piece():  # noqa: D103
     return BasePiece(1, 2, 3, Grid())
 
 
-@pytest.mark.parametrize("x, y, color", (
+@pytest.mark.parametrize("row, col, color", (
     (0, 0, 0),
     (1, 2, 3),
     (4, 2, 1)
 ))
-def test_piece_init(x, y, color):  # noqa: D103
-    piece = BasePiece(x, y, color, Grid())
+def test_piece_init(row, col, color):  # noqa: D103
+    piece = BasePiece(row, col, color, Grid())
 
-    assert piece.x == x
-    assert piece.y == y
+    assert piece.row == row
+    assert piece.col == col
     assert piece.color == color
 
 
-@pytest.mark.parametrize("coord", ("x", "y"))
+@pytest.mark.parametrize("coord", ("row", "col"))
 def test_piece_set_x_y(coord, piece, mocker):  # noqa: D103
     update_spy = mocker.patch.object(piece.grid, "move", unsafe=True)
 
@@ -35,26 +35,26 @@ def test_piece_set_x_y(coord, piece, mocker):  # noqa: D103
 
 def test_piece_get_field(piece):  # noqa: D103
     assert piece.field == (1, 2)
-    assert piece.field.x == 1
-    assert piece.field.y == 2
+    assert piece.field.row == 1
+    assert piece.field.col == 2
 
 
-@pytest.mark.parametrize("x, y", (
+@pytest.mark.parametrize("row, col", (
     (2, 3),
     (3, 2),
     (5, 5)
 ))
-def test_piece_set_field(x, y, piece):  # noqa: D103
-    piece.field = (x, y)
-    assert piece.field.x == x
-    assert piece.field.y == y
-    assert piece.field == (x, y)
-    assert piece.x == x
-    assert piece.y == y
+def test_piece_set_field(row, col, piece):  # noqa: D103
+    piece.field = (row, col)
+    assert piece.field.row == row
+    assert piece.field.col == col
+    assert piece.field == (row, col)
+    assert piece.row == row
+    assert piece.col == col
 
 
 def test_delete(piece):  # noqa: D103
-    x, y = piece.field
+    row, col = piece.field
     grid = piece.grid
 
     del piece
@@ -62,4 +62,4 @@ def test_delete(piece):  # noqa: D103
     with pytest.raises(UnboundLocalError):
         print(piece)
 
-    assert grid[(x, y)] is None
+    assert grid[(row, col)] is None
