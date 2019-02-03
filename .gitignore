@@ -1,5 +1,5 @@
 __pycache__
-
+.tox
 .idea
-pytest.ini
-venv
+*.egg-info
+Pipfile*

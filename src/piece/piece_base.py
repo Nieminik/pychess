@@ -1,49 +1,52 @@
-from src.grid import Grid
+"""Module implementing base piece functionality."""
+
 from src.utils.color import Color
 
 
 class Field(tuple):
+    """A field class that defines the piece coordinates."""
 
-    def __new__(cls, x, y):
-        return super(Field, cls).__new__(cls, (x, y))
+    def __new__(cls, row, col):  # noqa: D102
+        return super(Field, cls).__new__(cls, (row, col))
 
-    def __init__(self, x, y):
-        super().__init__()
-        self.x, self.y = x, y
+    def __init__(self, row, col):
+        super(Field, self).__init__()
+        self.row, self.col = row, col
 
 
 class BasePiece(object):
+    """Class for the piece base implementation."""
 
-    def __init__(self, x, y, color=Color.WHITE, grid=None):
-        self._x = x
-        self._y = y
+    def __init__(self, row, col, color=Color.WHITE, grid=None):
+        self._row = row
+        self._col = col
         self.color = color
         self.grid = grid
 
-    def __del__(self):
+    def __del__(self):  # noqa: D105
         self.grid.erase(self.field)
 
     @property
-    def field(self):
-        return Field(self.x, self.y)
+    def field(self):  # noqa: D102
+        return Field(self.row, self.col)
 
     @field.setter
-    def field(self, value):
+    def field(self, value):  # noqa: D102
         self.grid.move(self.field, value)
-        self._x, self._y = value
+        self._row, self._col = value
 
     @property
-    def x(self):
-        return self._x
+    def row(self):  # noqa: D102
+        return self._row
 
-    @x.setter
-    def x(self, value):
-        self.field = value, self.y
+    @row.setter
+    def row(self, value):  # noqa: D102
+        self.field = value, self.col
 
     @property
-    def y(self):
-        return self._y
+    def col(self):  # noqa: D102
+        return self._col
 
-    @y.setter
-    def y(self, value):
-        self.field = self.x, value
+    @col.setter
+    def col(self, value):  # noqa: D102
+        self.field = self.row, value
