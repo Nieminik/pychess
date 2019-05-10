@@ -1,13 +1,13 @@
 """Tests for src.piece.piece_base."""
 import pytest
 
-from src.grid import Grid
+from src.chess_grid import ChessGrid
 from src.piece.piece_base import BasePiece
 
 
 @pytest.fixture
 def piece():  # noqa: D103
-    return BasePiece(1, 2, 3, Grid())
+    return BasePiece(1, 2, 3, ChessGrid())
 
 
 @pytest.mark.parametrize("row, col, color", (
@@ -16,7 +16,7 @@ def piece():  # noqa: D103
     (4, 2, 1)
 ))
 def test_piece_init(row, col, color):  # noqa: D103
-    piece = BasePiece(row, col, color, Grid())
+    piece = BasePiece(row, col, color, ChessGrid())
 
     assert piece.row == row
     assert piece.col == col

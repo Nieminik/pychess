@@ -1,6 +1,6 @@
 """Tests for src.grid."""
 import pytest
-from src.grid import Grid
+from src.chess_grid import ChessGrid
 
 
 x_y_value = (
@@ -12,7 +12,7 @@ x_y_value = (
 
 @pytest.fixture
 def grid():  # noqa: D103
-    return Grid()
+    return ChessGrid()
 
 
 def test_grid_init(grid):  # noqa: D103

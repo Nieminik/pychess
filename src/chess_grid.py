@@ -1,8 +1,8 @@
 """Module implementing chess grid."""
 
 
-class Grid:
-    """Class implementing Grid."""
+class ChessGrid(object):
+    """Class implementing chess grid."""
 
     def __init__(self):
         self.fields = [[None] * 8] * 8
