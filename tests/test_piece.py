@@ -1,8 +1,15 @@
 """Tests for src.piece.piece_base."""
 import pytest
 
-from src.chess_grid import ChessGrid
+from src.chess_grid import ChessGrid, GridMoveError
 from src.piece.piece_base import BasePiece
+
+
+ROWS_COLS = (
+    (2, 3),
+    (3, 2),
+    (5, 5)
+)
 
 
 @pytest.fixture
@@ -39,11 +46,7 @@ def test_piece_get_field(piece):  # noqa: D103
     assert piece.field.col == 2
 
 
-@pytest.mark.parametrize("row, col", (
-    (2, 3),
-    (3, 2),
-    (5, 5)
-))
+@pytest.mark.parametrize("row, col", ROWS_COLS)
 def test_piece_set_field(row, col, piece):  # noqa: D103
     piece.field = (row, col)
     assert piece.field.row == row
@@ -63,3 +66,13 @@ def test_delete(piece):  # noqa: D103
         print(piece)
 
     assert grid[(row, col)] is None
+
+
+@pytest.mark.parametrize("row, col", ROWS_COLS)
+def test_move_failure(row, col, piece, mocker):
+    init_field = piece.field
+    mocker.patch.object(piece.grid, "move", side_effect=GridMoveError)
+
+    piece.field = (row, col)
+    assert piece.field == init_field
+

@@ -1,12 +1,17 @@
 """Tests for src.grid."""
 import pytest
-from src.chess_grid import ChessGrid
+from src.chess_grid import ChessGrid, GridMoveError
 
-
-x_y_value = (
+X_Y_VALUE = (
     (0, 0, 0xff),
     (1, 7, 0x01),
     (5, 2, 0x52)
+)
+
+INIT_NEW_FIELDS = (
+    (0, 0, 1, 1),
+    (1, 1, 0, 0),
+    (2, 3, 0, 4)
 )
 
 
@@ -22,7 +27,7 @@ def test_grid_init(grid):  # noqa: D103
         assert len(grid.fields[i]) == 8
 
 
-@pytest.mark.parametrize("row, col, value", x_y_value)
+@pytest.mark.parametrize("row, col, value", X_Y_VALUE)
 def test_get_item(row, col, value, grid):  # noqa: D103
     grid.fields[row][col] = value
     assert grid[row][col] == value
@@ -33,7 +38,7 @@ def test_get_item(row, col, value, grid):  # noqa: D103
     assert grid[(row, col)] == ~value
 
 
-@pytest.mark.parametrize("row, col, value", x_y_value)
+@pytest.mark.parametrize("row, col, value", X_Y_VALUE)
 def test_set_item(row, col, value, grid):  # noqa: D103
     grid[row][col] = value
     assert grid.fields[row][col] == value
@@ -48,11 +53,7 @@ def test_set_item(row, col, value, grid):  # noqa: D103
     assert grid.fields[row][col] == ~value
 
 
-@pytest.mark.parametrize("x_init, y_init, row, col", (
-    (0, 0, 1, 1),
-    (1, 1, 0, 0),
-    (2, 3, 0, 4)
-))
+@pytest.mark.parametrize("x_init, y_init, row, col", INIT_NEW_FIELDS)
 def test_move(x_init, y_init, row, col, grid, mocker):  # noqa: D103
     fake_piece = mocker.MagicMock()
     fake_piece.row, fake_piece.col = x_init, y_init
@@ -62,6 +63,13 @@ def test_move(x_init, y_init, row, col, grid, mocker):  # noqa: D103
 
     assert grid[(x_init, y_init)] is None
     assert grid[(row, col)] is fake_piece
+
+
+@pytest.mark.parametrize("x_init, y_init, row, col", INIT_NEW_FIELDS)
+def test_move_error(x_init, y_init, row, col, grid, mocker):
+    mocker.patch("src.chess_grid.is_move_possible", return_value=False)
+    with pytest.raises(GridMoveError):
+        grid.move((x_init, y_init), (row, col))
 
 
 @pytest.mark.parametrize("row, col", (

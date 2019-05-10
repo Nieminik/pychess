@@ -1,5 +1,5 @@
 """Module implementing base piece functionality."""
-
+from src.chess_grid import GridMoveError
 from src.utils.color import Color
 
 
@@ -32,8 +32,11 @@ class BasePiece(object):
 
     @field.setter
     def field(self, value):  # noqa: D102
-        self.grid.move(self.field, value)
-        self._row, self._col = value
+        try:
+            self.grid.move(self.field, value)
+            self._row, self._col = value
+        except GridMoveError:
+            pass
 
     @property
     def row(self):  # noqa: D102
