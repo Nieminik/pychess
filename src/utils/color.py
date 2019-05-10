@@ -1,10 +1,10 @@
 """Module defining enum class for color."""
 
-from enum import Enum
+from enum import Enum, auto
 
 
 class Color(Enum):
     """Color enum class."""
 
-    WHITE = 0
-    BLACK = 1
+    WHITE = auto()
+    BLACK = auto()
