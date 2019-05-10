@@ -69,10 +69,9 @@ def test_delete(piece):  # noqa: D103
 
 
 @pytest.mark.parametrize("row, col", ROWS_COLS)
-def test_move_failure(row, col, piece, mocker):
+def test_move_failure(row, col, piece, mocker):  # noqa: D103
     init_field = piece.field
     mocker.patch.object(piece.grid, "move", side_effect=GridMoveError)
 
     piece.field = (row, col)
     assert piece.field == init_field
-

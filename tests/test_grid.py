@@ -66,7 +66,7 @@ def test_move(x_init, y_init, row, col, grid, mocker):  # noqa: D103
 
 
 @pytest.mark.parametrize("x_init, y_init, row, col", INIT_NEW_FIELDS)
-def test_move_error(x_init, y_init, row, col, grid, mocker):
+def test_move_error(x_init, y_init, row, col, grid, mocker):  # noqa: D103
     mocker.patch("src.chess_grid.is_move_possible", return_value=False)
     with pytest.raises(GridMoveError):
         grid.move((x_init, y_init), (row, col))
