@@ -1,7 +1,8 @@
 """Tests for src.grid."""
 import pytest
-from src.chess_grid import ChessGrid
+from src.chess_grid import ChessGrid, MAX_COORD_VALUE
 from src.piece.piece_base import BasePiece
+from src.move_logic import MoveNotPossibleError
 
 X_Y_VALUE = (
     (0, 0, 0xff),
@@ -27,10 +28,10 @@ def grid():  # noqa: D103
 
 
 def test_grid_init(grid):  # noqa: D103
-    assert len(grid.fields) == 8
+    assert len(grid.fields) == MAX_COORD_VALUE
 
-    for i in range(8):
-        assert len(grid.fields[i]) == 8
+    for i in range(MAX_COORD_VALUE):
+        assert len(grid.fields[i]) == MAX_COORD_VALUE
 
 
 @pytest.mark.parametrize("row, col, value", X_Y_VALUE)
@@ -79,7 +80,8 @@ def test_grid_move_same_pos(grid, piece):  # noqa: D103
     field = (0, 0)
     piece._row, piece._col = field
     grid[field] = piece
-    grid.move(field, field)
+    with pytest.raises(MoveNotPossibleError):
+        grid.move(field, field)
 
     assert piece.moves == 0
 

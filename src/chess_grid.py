@@ -1,37 +1,35 @@
 """Module implementing chess grid."""
-from src.move_logic import is_move_possible
+from src.move_logic import is_move_possible, MoveNotPossibleError
 
 
-class GridMoveError(Exception):
-    """Custom exception for move error."""
+MAX_COORD_VALUE = 8
 
 
 class ChessGrid(object):
     """Class implementing chess grid."""
 
     def __init__(self):
-        self.fields = [[None] * 8] * 8
+        self.fields = [[None] * MAX_COORD_VALUE] * MAX_COORD_VALUE
 
     def __getitem__(self, i):
         """Use to access a field in a 8x8 grid."""
-        if hasattr(i, "__getitem__") and len(i) == 2:
-            return self.fields[i[0]][i[1]]
-        return self.fields[i]
+        try:
+            row, col = i
+            return self.fields[row][col]
+        except TypeError:
+            return self.fields[i]
 
     def __setitem__(self, i, value):
         """Use to set field in a 8x8 grid."""
-        self.fields[i[0]][i[1]] = value
+        row, col = i
+        self.fields[row][col] = value
 
     def move(self, old_field, field):
         """Move the content of one field to another."""
         if not is_move_possible(old_field, field):
-            return
+            raise MoveNotPossibleError("Could not move!")
 
-        try:
-            self[old_field].field = field
-        except AttributeError:
-            return
-
+        self[old_field].field = field
         self[old_field], self[field] = None, self[old_field]
 
     def erase(self, field):
