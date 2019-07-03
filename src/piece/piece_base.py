@@ -9,10 +9,11 @@ Field = namedtuple("Field", ("row", "col"))
 class BasePiece(object):
     """Class for the piece base implementation."""
 
-    def __init__(self, row, col, color=Color.WHITE):
+    def __init__(self, row, col, color=Color.WHITE, grid=None):
         self._row = row
         self._col = col
         self.color = color
+        self._grid = grid
         self.moves = 0
 
     @property
