@@ -1,30 +1,19 @@
 """Module implementing base piece functionality."""
-from src.chess_grid import GridMoveError
+import itertools
 from src.utils.color import Color
+from collections import namedtuple
 
-
-class Field(tuple):
-    """A field class that defines the piece coordinates."""
-
-    def __new__(cls, row, col):  # noqa: D102
-        return super(Field, cls).__new__(cls, (row, col))
-
-    def __init__(self, row, col):
-        super(Field, self).__init__()
-        self.row, self.col = row, col
+Field = namedtuple("Field", ("row", "col"))
 
 
 class BasePiece(object):
     """Class for the piece base implementation."""
 
-    def __init__(self, row, col, color=Color.WHITE, grid=None):
+    def __init__(self, row, col, color=Color.WHITE):
         self._row = row
         self._col = col
         self.color = color
-        self.grid = grid
-
-    def __del__(self):  # noqa: D105
-        self.grid.erase(self.field)
+        self.moves = 0
 
     @property
     def field(self):  # noqa: D102
@@ -32,11 +21,8 @@ class BasePiece(object):
 
     @field.setter
     def field(self, value):  # noqa: D102
-        try:
-            self.grid.move(self.field, value)
-            self._row, self._col = value
-        except GridMoveError:
-            pass
+        self.moves += 1
+        self._row, self._col = value
 
     @property
     def row(self):  # noqa: D102
@@ -53,3 +39,7 @@ class BasePiece(object):
     @col.setter
     def col(self, value):  # noqa: D102
         self.field = self.row, value
+
+    @property
+    def range(self):  # noqa: D102
+        return itertools.product(range(8), repeat=2)

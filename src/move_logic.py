@@ -3,4 +3,4 @@
 
 def is_move_possible(o_field, n_field):
     """Determine if a move is possible."""
-    return True  # TODO: IMPLEMENT
+    return o_field != n_field  # TODO: IMPLEMENT

@@ -1,6 +1,7 @@
 """Tests for src.grid."""
 import pytest
-from src.chess_grid import ChessGrid, GridMoveError
+from src.chess_grid import ChessGrid
+from src.piece.piece_base import BasePiece
 
 X_Y_VALUE = (
     (0, 0, 0xff),
@@ -13,6 +14,11 @@ INIT_NEW_FIELDS = (
     (1, 1, 0, 0),
     (2, 3, 0, 4)
 )
+
+
+@pytest.fixture
+def piece():  # noqa: D103
+    return BasePiece(-1, -1, -1)
 
 
 @pytest.fixture
@@ -53,23 +59,29 @@ def test_set_item(row, col, value, grid):  # noqa: D103
     assert grid.fields[row][col] == ~value
 
 
-@pytest.mark.parametrize("x_init, y_init, row, col", INIT_NEW_FIELDS)
-def test_move(x_init, y_init, row, col, grid, mocker):  # noqa: D103
-    fake_piece = mocker.MagicMock()
-    fake_piece.row, fake_piece.col = x_init, y_init
-    grid[(x_init, y_init)] = fake_piece
+@pytest.mark.parametrize("x_init, y_init, row, col", (
+    (0, 0, 1, 1),
+    (1, 1, 0, 0),
+    (2, 3, 0, 4)
+))
+def test_grid_move(x_init, y_init, row, col, grid, piece):  # noqa: D103
+    piece._row, piece._col = (x_init, y_init)
+    grid[(x_init, y_init)] = piece
 
     grid.move((x_init, y_init), (row, col))
 
+    assert piece.moves == 1
     assert grid[(x_init, y_init)] is None
-    assert grid[(row, col)] is fake_piece
+    assert grid[(row, col)] is piece
 
 
-@pytest.mark.parametrize("x_init, y_init, row, col", INIT_NEW_FIELDS)
-def test_move_error(x_init, y_init, row, col, grid, mocker):  # noqa: D103
-    mocker.patch("src.chess_grid.is_move_possible", return_value=False)
-    with pytest.raises(GridMoveError):
-        grid.move((x_init, y_init), (row, col))
+def test_grid_move_same_pos(grid, piece):  # noqa: D103
+    field = (0, 0)
+    piece._row, piece._col = field
+    grid[field] = piece
+    grid.move(field, field)
+
+    assert piece.moves == 0
 
 
 @pytest.mark.parametrize("row, col", (

@@ -24,10 +24,15 @@ class ChessGrid(object):
 
     def move(self, old_field, field):
         """Move the content of one field to another."""
-        if is_move_possible(old_field, field):
-            self[old_field], self[field] = None, self[old_field]
-        else:
-            raise GridMoveError("Grid: Failed to conduct a move.")
+        if not is_move_possible(old_field, field):
+            return
+
+        try:
+            self[old_field].field = field
+        except AttributeError:
+            return
+
+        self[old_field], self[field] = None, self[old_field]
 
     def erase(self, field):
         """Erase the field content."""
