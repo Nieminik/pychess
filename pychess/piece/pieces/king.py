@@ -18,5 +18,5 @@ class King(Piece):
         pieces = self.grid.get_enemies(self)
         ranges = list(chain.from_iterable([p.attack_range for p in pieces]))
 
-        rng = list(hor), list(ver), list(diag)
+        rng = list(hor) + list(ver) + list(diag)
         return [x for x in rng if x not in ranges]
