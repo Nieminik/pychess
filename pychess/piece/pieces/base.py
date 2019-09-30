@@ -7,10 +7,10 @@ from pychess.piece.position import Position
 class Piece(object):
     """Generic piece class."""
 
-    def __init__(self, position, color=Color.White):
+    def __init__(self, position, color=Color.White, grid=None):
         self._pos = Position(*position)
         self.color = color
-        self.grid = None
+        self.grid = grid
         self.moves = 0
 
     @property
