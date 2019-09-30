@@ -1,35 +1,35 @@
-from collections import namedtuple
+"""Provide generic piece functionality."""
 
 from pychess.piece.color import Color
-
-position_tup = namedtuple("Position", "row, col")
-
-MIN_POS = 0
-MAX_POS = 8
+from pychess.piece.position import Position
 
 
 class Piece(object):
+    """Generic piece class."""
+
     def __init__(self, position, color=Color.White):
-        self._pos = position_tup(*position)
+        self._pos = Position(*position)
         self.color = color
         self.grid = None
         self.moves = 0
 
     @property
-    def move_range(self):
+    def move_range(self):  # noqa: D102
         return []
 
     @property
-    def attack_range(self):
+    def attack_range(self):  # noqa: D102
         return self.move_range
 
     @property
-    def position(self):
+    def position(self):  # noqa: D102
         return self._pos
 
-    @position.setter
-    def position(self, value):
-        self._pos = position_tup(*value)
+    def move(self, value):  # noqa: D102
+        new_pos = Position(*value)
+        self.moves += int(new_pos != self._pos)
+        self._pos = new_pos
 
-    def __repr__(self):
-        return f"{self.color.name} {self.__class__.__name__} at {self.position}"
+    def __repr__(self):  # noqa: D105
+        msg = f"{self.color.name} {self.__class__.__name__} at {self.position}"
+        return msg
