@@ -1,7 +1,5 @@
 """Provide pawn piece functionality."""
 
-from itertools import zip_longest
-
 from pychess.piece.pieces.base import Piece
 from pychess.piece.position import Position, MAX_POS, MIN_POS
 from pychess.piece.color import Color
@@ -16,7 +14,7 @@ class Pawn(Piece):
         """Get a move range for pawn."""
         rng = []
         fwd = m_iters.forward(self)
-        for pos, move_cond in zip_longest(fwd, (True, not self.moves)):
+        for pos, move_cond in zip(fwd, (True, not self.moves)):
             if pos and move_cond:
                 rng.append(Position(*pos))
 
