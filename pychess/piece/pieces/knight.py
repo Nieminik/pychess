@@ -15,6 +15,9 @@ class Knight(Piece):
         diffs = list(product([1, -1], [2, -2]))
         diffs += [tuple(reversed(x)) for x in diffs]
         rng = []
+        
+        # TODO: Change this so _pos_iter is used. 
+        # This is lacking other pieces recognition.
         for d_row, d_col in diffs:
             n_row, n_col = row + d_row, col + d_col
             pos = Position(n_row, n_col)
