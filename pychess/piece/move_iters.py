@@ -10,17 +10,17 @@ from pychess.piece.pieces.pawn import Pawn
 
 def _pos_iter(piece, transformation):
     """Iterate through positions based on the given transformation function."""
-    row, col = piece.position
+    pos = piece.position
     while True:
-        row, col = transformation(row, col)
-        if not all(map(lambda x: x in range(MIN_POS, MAX_POS), (row, col))):
+        pos = Position(transformation(*pos))
+        if not pos.is_valid():
             break
-        other_piece = piece.grid[(row, col)]
+        other_piece = piece.grid[pos]
         if other_piece and other_piece.color != piece.color:
             if not isinstance(piece, Pawn):
-                yield Position(row, col)
+                yield pos
             break
-        yield Position(row, col)
+        yield pos
 
 
 def _iterate_evenly(*iters, max_iters=None):
