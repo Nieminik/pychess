@@ -3,7 +3,7 @@
 import pytest
 import itertools
 from pychess.piece.pieces.base import Piece
-from pychess.piece.move_iters import forward, back
+from pychess.piece.move_iters import forward, back, left, right
 from pychess.piece.position import Position
 from pychess.grid import Grid
 
@@ -22,21 +22,29 @@ start_positions = (
 
 start_positions = list(Position(*p) for p in itertools.product(range(8), repeat=2))
 
-@pytest.mark.parametrize("pos", start_positions)
-def test_forward(piece, pos):  # noqa: D103
+def basic_iters_test_helper(piece, pos, func, transformation):
     piece._pos = pos
     row, col = piece.position
-    for r, c in forward(piece):
-        assert r == row + 1
+    for r, c in func(piece):
+        row, col = transformation(row, col)
+        assert r == row
         assert c == col
-        row = r
+
+@pytest.mark.parametrize("pos", start_positions)
+def test_forward(piece, pos):  # noqa: D103
+    basic_iters_test_helper(piece, pos, forward, lambda r, c: (r + 1, c))
 
 
 @pytest.mark.parametrize("pos", start_positions)
 def test_back(piece, pos):  # noqa: D103
-    piece._pos = pos
-    row, col = piece.position
-    for r, c in back(piece):
-        assert r == row - 1
-        assert c == col
-        row = r
+    basic_iters_test_helper(piece, pos, forward, lambda r, c: (r - 1, c))
+
+
+@pytest.mark.parametrize("pos", start_positions)
+def test_left(piece, pos):  # noqa: D103
+    basic_iters_test_helper(piece, pos, left, lambda r, c: (r, c - 1))
+
+
+@pytest.mark.parametrize("pos", start_positions)
+def test_right(piece, pos):  # noqa: D103
+    basic_iters_test_helper(piece, pos, right, lambda r, c: (r, c + 1))
