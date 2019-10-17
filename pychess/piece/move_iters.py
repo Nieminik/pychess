@@ -1,11 +1,9 @@
 """Module implementing move iterators for pieces."""
-from copy import copy
 from functools import partial
 from itertools import product, cycle
 
-from pychess.piece.position import Position, MIN_POS, MAX_POS
-from pychess.piece.color import Color
 from pychess.piece.pieces.pawn import Pawn
+from pychess.piece.position import Position
 
 
 def _pos_iter(piece, transformation):
