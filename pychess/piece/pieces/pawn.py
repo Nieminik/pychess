@@ -13,7 +13,8 @@ class Pawn(Piece):
     def move_range(self):
         """Get a move range for pawn."""
         rng = []
-        fwd = m_iters.forward(self)
+        fwd_func = m_iters.up if self.color == Color.White else m_itsrs.down
+        fwd = fwd_func(self)
         for pos, move_cond in zip(fwd, (True, not self.moves)):
             if pos and move_cond:
                 rng.append(Position(*pos))

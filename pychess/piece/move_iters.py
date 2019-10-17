@@ -12,7 +12,7 @@ def _pos_iter(piece, transformation):
     """Iterate through positions based on the given transformation function."""
     pos = piece.position
     while True:
-        pos = Position(transformation(*pos))
+        pos = Position(*transformation(*pos))
         if not pos.is_valid():
             break
         other_piece = piece.grid[pos]
@@ -42,17 +42,14 @@ def _iterate_evenly(*iters, max_iters=None):
             break
 
 
-def forward(piece):
-    """Generate forward positions for given piece."""
-    step = 1 if piece.color is Color.White else -1
-    return _pos_iter(piece, lambda r, c: (r + step, c))
+def up(piece):
+    """Generate up positions for given piece."""
+    return _pos_iter(piece, lambda r, c: (r + 1, c))
 
 
-def back(piece):
-    """Generate back positions for given piece."""
-    piece = copy(piece)
-    piece.color = piece.color.inverted()
-    return forward(piece)
+def down(piece):
+    """Generate down positions for given piece."""
+    return _pos_iter(piece, lambda r, c: (r - 1, c))
 
 
 def left(piece):
@@ -72,7 +69,7 @@ def horizontal(piece, max_iters=None):
 
 def vertical(piece, max_iters=None):
     """Generate vertical positions for given piece."""
-    return _iterate_evenly(forward(piece), back(piece), max_iters=max_iters)
+    return _iterate_evenly(up(piece), down(piece), max_iters=max_iters)
 
 
 def _diagonal_helper(r, c, rd, cd):

@@ -9,22 +9,44 @@ from pychess.piece.color import Color
 @pytest.fixture
 def grid():  # noqa: D103
     return Grid()
-    g.add_piece(
-    g.add_piece()
-    return g
 
-pieces_groups = (
-    (Piece((1, 2), color=Color.White), Piece((1, 1), color=Color.Black)),
-    (Piece((2, 3), color=Color.White), Piece((4, 4), color=Color.White)),
-    (Piece((1, 2), color=Color.Black), Piece((0, 2), color=Color.Black))    
+
+pieces_enemies_params = (
+    (((1, 2), Color.White), ((1, 1), Color.Black)),
+    (((2, 3), Color.Black), ((4, 4), Color.White)),
+    (((5, 5), Color.White), ((0, 1), Color.Black)),
 )
 
-@pytest.mark.parametrize("pieces", pieces_groups)
-def test_enemies(grid, pieces):  # noqa: D103
-    for piece in pieces:
+pieces_no_enemies_params = (
+    (((1, 2), Color.White), ((1, 1), Color.White)),
+    (((2, 3), Color.White), ((4, 4), Color.White)),
+    (((5, 5), Color.Black), ((0, 1), Color.Black)),
+)
+
+
+def _enemies_test_helper(grid, pieces_params, enemies):
+    for params in pieces_params:
+        piece = Piece(*params)
         grid.add_piece(piece)
     pieces = grid.fields.values()
     assert pieces
-    
+
     for piece in pieces:
-        assert grid.get_enemies(piece)
+        assert bool(grid.get_enemies(piece)) == enemies
+
+
+def test_add_piece(grid, mocker):  # noqa: D103
+    piece_mock = mocker.MagicMock()
+    grid.add_piece(piece_mock)
+
+    assert piece_mock.grid == grid
+
+
+@pytest.mark.parametrize("pieces_params", pieces_enemies_params)
+def test_enemies(grid, pieces_params):  # noqa: D103
+    _enemies_test_helper(grid, pieces_params, True)
+
+
+@pytest.mark.parametrize("pieces_params", pieces_no_enemies_params)
+def test_no_enemies(grid, pieces_params):  # noqa: D103
+    _enemies_test_helper(grid, pieces_params, False)
