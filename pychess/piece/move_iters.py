@@ -13,7 +13,6 @@ def _pos_iter(piece, transformation):
         if not pos.is_valid():
             break
         other_piece = piece.grid[pos]
-        print("Piece: {}".format(other_piece))
         if other_piece:
             if other_piece.color != piece.color and piece.move_attacks:
                 yield pos
@@ -25,16 +24,16 @@ def _iterate_evenly(*iters, max_iters=None):
     """Conduct every given iterator one by one."""
     exclude_iters = set()
     iters = set(iters)
-    for i, iter in enumerate(cycle(iters)):
+    for i, iter_f in enumerate(cycle(iters)):
         if max_iters == i:
             break
 
-        if iter in exclude_iters:
+        if iter_f in exclude_iters:
             continue
         try:
-            yield next(iter)
+            yield next(iter_f)
         except StopIteration:
-            exclude_iters.add(iter)
+            exclude_iters.add(iter_f)
 
         if not iters.difference(exclude_iters):
             break
@@ -71,7 +70,7 @@ def vertical(piece, max_iters=None):
 
 
 def _diagonal_helper(r, c, rd, cd):
-    return (r + rd, c + cd)
+    return r + rd, c + cd
 
 
 def diagonal(piece, max_iters=None):
