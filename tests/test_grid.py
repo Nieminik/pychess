@@ -11,20 +11,30 @@ def grid():  # noqa: D103
     return Grid()
 
 
-pieces_enemies_params = (
-    (((1, 2), Color.White), ((1, 1), Color.Black)),
-    (((2, 3), Color.Black), ((4, 4), Color.White)),
-    (((5, 5), Color.White), ((0, 1), Color.Black)),
+pieces_enemies_coords = (
+    ((1, 2), (1, 1)),
+    ((2, 3), (4, 4)),
+    ((5, 5), (0, 1))
 )
 
-pieces_no_enemies_params = (
-    (((1, 2), Color.White), ((1, 1), Color.White)),
-    (((2, 3), Color.White), ((4, 4), Color.White)),
-    (((5, 5), Color.Black), ((0, 1), Color.Black)),
+pieces_enemies_colors = (
+    (Color.White, Color.Black),
+    (Color.Black, Color.White),
+    (Color.White, Color.Black)
 )
+
+pieces_no_enemies_colors = (
+    (Color.White, Color.White),
+    (Color.Black, Color.Black),
+    (Color.White, Color.White)
+)
+
+pieces_enemies_params = zip(pieces_enemies_coords, pieces_enemies_colors)
+pieces_no_enemies_params = zip(pieces_enemies_coords, pieces_no_enemies_colors)
 
 
 def _enemies_test_helper(grid, pieces_params, enemies):
+    pieces_params = zip(*pieces_params)
     for params in pieces_params:
         piece = Piece(*params)
         grid.add_piece(piece)
