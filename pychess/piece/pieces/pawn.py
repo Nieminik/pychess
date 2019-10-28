@@ -1,19 +1,22 @@
 """Provide pawn piece functionality."""
-
+from pychess.piece.move_iters import up, down
 from pychess.piece.pieces.base import Piece
 from pychess.piece.position import Position, MAX_POS, MIN_POS
 from pychess.piece.color import Color
-import pychess.piece.move_iters as m_iters
 
 
 class Pawn(Piece):
     """Represent a queen object."""
 
+    def __init__(self, position, color, grid):
+        super(Pawn, self).__init__(position, color, grid)
+        self.move_attacks = False
+
     @property
     def move_range(self):
         """Get a move range for pawn."""
         rng = []
-        fwd_func = m_iters.up if self.color == Color.White else m_iters.down
+        fwd_func = up if self.color == Color.White else down
         fwd = fwd_func(self)
         for pos, move_cond in zip(fwd, (True, not self.moves)):
             if pos and move_cond:

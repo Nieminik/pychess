@@ -2,7 +2,6 @@
 from functools import partial
 from itertools import product, cycle
 
-from pychess.piece.pieces.pawn import Pawn
 from pychess.piece.position import Position
 
 
@@ -14,8 +13,9 @@ def _pos_iter(piece, transformation):
         if not pos.is_valid():
             break
         other_piece = piece.grid[pos]
-        if other_piece and other_piece.color != piece.color:
-            if not isinstance(piece, Pawn):
+        print("Piece: {}".format(other_piece))
+        if other_piece:
+            if other_piece.color != piece.color and piece.move_attacks:
                 yield pos
             break
         yield pos

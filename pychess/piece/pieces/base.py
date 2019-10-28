@@ -12,6 +12,7 @@ class Piece(object):
         self.color = color
         self.grid = grid
         self.moves = 0
+        self.move_attacks = True
 
     @property
     def move_range(self):  # noqa: D102
