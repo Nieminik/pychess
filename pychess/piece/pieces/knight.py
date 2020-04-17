@@ -16,12 +16,12 @@ class Knight(Piece):
         diffs += [tuple(reversed(x)) for x in diffs]
         rng = []
 
-        # TODO: Change this so _pos_iter is used.
-        # This is lacking other pieces recognition.
         for d_row, d_col in diffs:
             n_row, n_col = row + d_row, col + d_col
             pos = Position(n_row, n_col)
-            if pos.is_valid():
+            other = self.grid[pos]
+            other_is_enemy = not other or other.color == self.color.inverted()
+            if pos.is_valid() and other_is_enemy:
                 rng.append(pos)
 
         return rng
