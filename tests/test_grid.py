@@ -60,3 +60,37 @@ def test_enemies(grid, pieces_params):  # noqa: D103
 @pytest.mark.parametrize("pieces_params", pieces_no_enemies_params)
 def test_no_enemies(grid, pieces_params):  # noqa: D103
     _enemies_test_helper(grid, pieces_params, False)
+
+
+def test_access_field(grid, mocker):  # noqa: D103
+    piece_mock = mocker.MagicMock()
+    piece_mock.position = (1, 1)
+    grid.add_piece(piece_mock)
+
+    assert grid[(1, 1)] == piece_mock
+    assert grid[(0, 0)] is None
+
+
+def test_move(grid, mocker):  # noqa: D103
+    piece_mock = mocker.MagicMock()
+    piece_mock.position = (1, 1)
+    grid.add_piece(piece_mock)
+
+    grid.move((1, 1), (1, 2))
+    assert grid[(1, 1)] is None
+    assert grid[(1, 2)] == piece_mock
+
+
+def test_captured(grid, mocker):  # noqa: D103
+    piece_mock = mocker.MagicMock()
+    piece_mock2 = mocker.MagicMock()
+
+    piece_mock.position = (1, 1)
+    piece_mock2.position = (1, 2)
+
+    grid.add_piece(piece_mock)
+    grid.add_piece(piece_mock2)
+
+    grid.move((1, 1), (1, 2))
+
+    assert grid.captured == [piece_mock2]
