@@ -44,10 +44,32 @@ class Pawn(Piece):
         for n_col in (col + 1, col - 1):
             pos = Position(n_row, n_col)
             other = self.grid[pos]
-            if pos.is_valid() and not other or other.color != self.color:
+            if pos.is_valid() and other and other.color != self.color:
+                rng.append(pos)
+
+            an_passant_pos = Position(row, n_col)
+            other = self.grid[an_passant_pos]
+            an_passant = (other and other.moves == 1)
+            if pos.is_valid() and an_passant and other.color != self.color:
                 rng.append(pos)
 
         return rng
+
+    def move(self, value):
+        new_pos = Position(*value)
+        other = self.grid[new_pos]
+        report = False
+        if new_pos in self.attack_range and other is None:
+            report = True
+            r, c = new_pos
+            curr_r, curr_c = self.position
+            other = self.grid[Position(curr_r, c)]
+
+        move_succeeded = super().move(value)
+        if report and move_succeeded:
+            self.grid.report_capture(other)
+
+        return move_succeeded
 
     @staticmethod
     def get_direction(pawn):
