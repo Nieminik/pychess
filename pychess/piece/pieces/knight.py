@@ -23,5 +23,8 @@ class Knight(Piece):
             other_is_enemy = not other or other.color == self.color.inverted()
             if pos.is_valid() and other_is_enemy:
                 rng.append(pos)
+            other_piece = self.grid[pos]
+            if other_piece and other_piece.color != self.color:
+                rng.append(pos)
 
         return rng
