@@ -24,7 +24,7 @@ class Grid(object):
     def move(self, old_pos, new_pos):
         """Move piece."""
         piece = self.fields[old_pos]
-        other = self.fields[new_pos]
+        other = self.fields.get(new_pos, None)
 
         move_successful = piece.move(new_pos)
 
