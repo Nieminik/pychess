@@ -56,6 +56,7 @@ class Pawn(Piece):
         return rng
 
     def move(self, value):
+        """Move, check for an passant capture, report it."""
         new_pos = Position(*value)
         other = self.grid[new_pos]
         report = False
