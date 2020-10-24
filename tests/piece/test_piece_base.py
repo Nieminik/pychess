@@ -1,8 +1,10 @@
 """Tests for base piece."""
+from itertools import product
+
 import pytest
 
 from pychess.piece.pieces.base import Piece
-from pychess.piece.position import Position
+from pychess.piece.position import Position, MAX_POS
 
 
 @pytest.fixture
@@ -20,7 +22,9 @@ def test_move(piece):  # noqa: D103
     r, c = piece.position
     moves = piece.moves
 
-    piece.move(Position(r, c))
+    piece._mv_range = product(range(MAX_POS), repeat=2)
+
+    assert not piece.move(Position(r, c))
     assert piece.moves == moves
 
     piece.move(Position(r ^ 1, c ^ 1))

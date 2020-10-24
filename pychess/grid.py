@@ -19,3 +19,14 @@ class Grid(object):
         """Get enemies of given piece."""
         inverted_color = piece.color.inverted()
         return [x for x in self.fields.values() if x.color is inverted_color]
+
+    def move(self, old_pos, new_pos):
+        """Move piece."""
+        piece = self.fields[old_pos]
+
+        if piece.move(new_pos):
+            del self.fields[old_pos]
+            self.fields[new_pos] = piece
+            return True
+
+        return False
