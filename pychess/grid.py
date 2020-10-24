@@ -33,6 +33,10 @@ class Grid(object):
             self.fields[new_pos] = piece
 
         if other and move_successful:
-            self.captured.append(other)
+            self.report_capture(other)
 
         return move_successful
+
+    def report_capture(self, piece):
+        """Keep track of captured pieces."""
+        self.captured.append(piece)
