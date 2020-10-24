@@ -41,8 +41,10 @@ class Pawn(Piece):
         rng = []
 
         for n_col in (col + 1, col - 1):
-            if n_col in range(MIN_POS, MAX_POS):
-                rng.append(Position(n_row, n_col))
+            pos = Position(n_row, n_col)
+            other = self.grid[pos]
+            if pos.is_valid() and not other or other.color != self.color:
+                rng.append(pos)
 
         return rng
 
