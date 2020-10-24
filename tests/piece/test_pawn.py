@@ -32,6 +32,17 @@ def get_expected_move_range(pawn, two_positions=False):
     return expected
 
 
+def get_expected_attack_range(pawn, left=True, right=True):
+    """Get expected move range."""
+    r, c = pawn.position
+    dir_val = Pawn.get_direction(pawn).value
+    left_right = []
+    if right: left_right.append(1)
+    if left: left_right.append(-1)
+
+    return [Position(r + dir_val, c + x) for x in left_right]
+
+
 @pytest.mark.parametrize("r, c, col", PAWN_RANGE_TEST_DATA)
 def test_pawn_move_range(r, c, col, pawn):  # noqa: D103
     pawn._pos = Position(r, c)
@@ -76,3 +87,29 @@ def test_pawn_range_obstruction(pawn):  # noqa: D103
 
     assert grid.move(p3.position, (r + 1, c))
     assert pawn.move_range == []
+
+
+def test_attack_range(pawn):  # noqa: D103
+    r, c = pawn.position
+    dir_val = pawn.get_direction(pawn).value
+    grid = pawn.grid
+
+    assert pawn.attack_range == get_expected_attack_range(pawn)
+
+    p2_pos = Position(r + dir_val, c - 1)
+    grid.add_piece(Pawn(p2_pos))
+    assert pawn.attack_range == get_expected_attack_range(
+        pawn, left=False, right=True)
+
+    p3_pos = Position(r + dir_val, c + 1)
+    grid.add_piece(Pawn(p3_pos))
+    assert pawn.attack_range == get_expected_attack_range(
+        pawn, left=False, right=False)
+
+    grid[p2_pos].color = grid[p2_pos].color.inverted()
+    assert pawn.attack_range == get_expected_attack_range(
+        pawn, left=True, right=False)
+
+    grid[p3_pos].color = grid[p3_pos].color.inverted()
+    assert pawn.attack_range == get_expected_attack_range(
+        pawn, left=True, right=True)
