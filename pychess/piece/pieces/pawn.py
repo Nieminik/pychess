@@ -8,6 +8,7 @@ from enum import Enum
 
 class Direction(Enum):
     """Pawn move direction enum."""
+
     Down = -1
     Up = 1
 
