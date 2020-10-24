@@ -37,8 +37,10 @@ def get_expected_attack_range(pawn, left=True, right=True):
     r, c = pawn.position
     dir_val = Pawn.get_direction(pawn).value
     left_right = []
-    if right: left_right.append(1)
-    if left: left_right.append(-1)
+    if right:
+        left_right.append(1)
+    if left:
+        left_right.append(-1)
 
     return [Position(r + dir_val, c + x) for x in left_right]
 

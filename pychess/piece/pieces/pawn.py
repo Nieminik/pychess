@@ -1,9 +1,10 @@
 """Provide pawn piece functionality."""
+from enum import Enum
+
+from pychess.piece.color import Color
 from pychess.piece.move_iters import up, down
 from pychess.piece.pieces.base import Piece
-from pychess.piece.position import Position, MAX_POS, MIN_POS
-from pychess.piece.color import Color
-from enum import Enum
+from pychess.piece.position import Position
 
 
 class Direction(Enum):
