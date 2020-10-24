@@ -6,6 +6,7 @@ class Grid(object):
 
     def __init__(self):  # noqa: D103
         self.fields = {}
+        self.captured = []
 
     def __getitem__(self, item):  # noqa: D105
         return self.fields.get(item, None)
@@ -23,10 +24,15 @@ class Grid(object):
     def move(self, old_pos, new_pos):
         """Move piece."""
         piece = self.fields[old_pos]
+        other = self.fields[new_pos]
 
-        if piece.move(new_pos):
+        move_successful = piece.move(new_pos)
+
+        if move_successful:
             del self.fields[old_pos]
             self.fields[new_pos] = piece
-            return True
 
-        return False
+        if other and move_successful:
+            self.captured.append(other)
+
+        return move_successful

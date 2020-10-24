@@ -29,7 +29,10 @@ class Piece(object):
 
     def move(self, value):  # noqa: D102
         new_pos = Position(*value)
-        if new_pos != self._pos and new_pos in self.move_range:
+        if new_pos == self._pos:
+            return False
+
+        if new_pos in self.move_range or new_pos in self.attack_range:
             self.moves += 1
             self._pos = new_pos
             return True
