@@ -19,7 +19,9 @@ PAWN_RANGE_TEST_DATA = (
 @pytest.fixture
 def pawn():  # noqa: D103
     grid = Grid()
-    return Pawn(Position(1, 1), grid=grid)
+    pawn = Pawn(Position(1, 1))
+    grid.add_piece(pawn)
+    return pawn
 
 
 def get_expected_move_range(pawn, two_positions=False):
