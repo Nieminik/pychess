@@ -22,18 +22,24 @@ def pawn():  # noqa: D103
     return Pawn(Position(1, 1), grid=grid)
 
 
+def get_expected_move_range(pawn, two_positions=False):
+    """Get expected move range."""
+    r, c = pawn.position
+    dir_val = Pawn.get_direction(pawn).value
+    expected = [Position(r + dir_val, c)]
+    if two_positions:
+        expected.append(Position(r + dir_val * 2, c))
+    return expected
+
+
 @pytest.mark.parametrize("r, c, col", PAWN_RANGE_TEST_DATA)
-def test_pawn_range(r, c, col, pawn):  # noqa: D103
+def test_pawn_move_range(r, c, col, pawn):  # noqa: D103
     pawn._pos = Position(r, c)
     pawn.color = col
-
-    dir_val = Pawn.get_direction(pawn).value
-    expected_rng = [Position(r + dir_val, c),
-                    Position(r + dir_val * 2, c)]
-    assert pawn.move_range == expected_rng
+    assert pawn.move_range == get_expected_move_range(pawn, True)
 
     pawn.moves += 1
-    assert pawn.move_range == [Position(r + dir_val, c)]
+    assert pawn.move_range == get_expected_move_range(pawn, False)
 
 
 def test_pawn_empty_range(pawn):  # noqa: D103
@@ -47,4 +53,26 @@ def test_pawn_empty_range(pawn):  # noqa: D103
 
 
 def test_pawn_range_obstruction(pawn):  # noqa: D103
-    raise Exception("Test not implemented!")  # TODO: add test
+    r, c = pawn.position
+    grid = pawn.grid
+    assert pawn.move_range == get_expected_move_range(pawn, two_positions=True)
+
+    p2 = Pawn(Position(r + 1, c), pawn.color, grid)
+    grid.add_piece(p2)
+    assert pawn.move_range == []
+
+    assert grid.move(Position(r + 1, c), Position(r + 2, c))
+    assert pawn.move_range == get_expected_move_range(pawn, False)
+
+    assert grid.move(Position(r + 2, c), Position(r + 3, c))
+    assert pawn.move_range == get_expected_move_range(pawn, True)
+
+    pawn.moves += 1
+    assert pawn.move_range == get_expected_move_range(pawn, False)
+
+    p3 = Pawn(Position(r + 2, c), pawn.color.inverted(), grid)
+    grid.add_piece(p3)
+    assert pawn.move_range == get_expected_move_range(pawn, False)
+
+    assert grid.move(p3.position, (r + 1, c))
+    assert pawn.move_range == []
