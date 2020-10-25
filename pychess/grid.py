@@ -40,3 +40,6 @@ class Grid(object):
     def report_capture(self, piece):
         """Keep track of captured pieces."""
         self.captured.append(piece)
+        for pos, grid_piece in dict(self.fields).items():
+            if piece == grid_piece:
+                del self.fields[pos]
