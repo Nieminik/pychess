@@ -129,8 +129,15 @@ def test_an_passant(pawn):  # noqa: D103
     grid[p2_pos].moves = 1
     assert pawn.attack_range == []
 
+    grid[p2_pos].color = pawn.color.inverted()
+    attacked_pos = Position(r + pawn.get_direction(pawn).value, p2_pos.col)
+    assert pawn.attack_range == [attacked_pos]
+
+    grid[p2_pos].moves = 0
+    assert pawn.attack_range == []
+
     p3_pos = Position(r, c + 1)
-    attacked_pos = Position(r + pawn.get_direction(pawn).value, c + 1)
+    attacked_pos = Position(r + pawn.get_direction(pawn).value, p3_pos.col)
     grid.add_piece(Pawn(p3_pos, pawn.color.inverted()))
     grid[p3_pos].moves = 1
     assert pawn.attack_range == [attacked_pos]
