@@ -94,3 +94,8 @@ def test_captured(grid, mocker):  # noqa: D103
     grid.move((1, 1), (1, 2))
 
     assert grid.captured == [piece_mock2]
+    assert piece_mock2 not in grid.fields.values()
+
+    grid.report_capture(piece_mock)
+    assert grid.captured == [piece_mock2, piece_mock]
+    assert piece_mock not in grid.fields.values()
