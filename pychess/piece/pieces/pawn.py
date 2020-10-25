@@ -44,13 +44,7 @@ class Pawn(Piece):
         for n_col in (col + 1, col - 1):
             pos = Position(n_row, n_col)
             other = self.grid[pos]
-            if pos.is_valid() and other and other.color != self.color:
-                rng.append(pos)
-
-            an_passant_pos = Position(row, n_col)
-            other = self.grid[an_passant_pos]
-            an_passant = (other and other.moves == 1)
-            if pos.is_valid() and an_passant and other.color != self.color:
+            if pos.is_valid() and not other or other.color != self.color:
                 rng.append(pos)
 
         return rng
@@ -58,17 +52,25 @@ class Pawn(Piece):
     def move(self, value):
         """Move, check for an passant capture, report it."""
         new_pos = Position(*value)
-        other = self.grid[new_pos]
-        report = False
-        if new_pos in self.attack_range and other is None:
-            report = True
-            r, c = new_pos
-            curr_r, curr_c = self.position
-            other = self.grid[Position(curr_r, c)]
 
-        move_succeeded = super().move(value)
-        if report and move_succeeded:
-            self.grid.report_capture(other)
+        other = self.grid[new_pos]
+        an_passant = False
+        if new_pos in self.move_range:
+            move_possible = True
+        elif new_pos in self.attack_range and other:
+            move_possible = other.color != self.color
+        else:
+            dir_val = self.get_direction(self).value
+            an_passant_pos = Position(new_pos.row - dir_val, new_pos.col)
+            an_passant_victim = self.grid[an_passant_pos]
+            move_possible = Pawn._can_be_captured_an_passant(
+                an_passant_victim, self)
+            an_passant = move_possible and an_passant_victim
+
+        move_succeeded = super().move(value) if move_possible else False
+
+        if move_succeeded and an_passant:
+            self.grid.report_capture(an_passant)
 
         return move_succeeded
 
@@ -76,3 +78,14 @@ class Pawn(Piece):
     def get_direction(pawn):
         """Get direction of pawn."""
         return Direction.Up if pawn.color is Color.White else Direction.Down
+
+    @staticmethod
+    def _can_be_captured_an_passant(piece, attacker):
+        if piece is None:
+            return False
+
+        condition = piece.color != attacker.color
+        condition *= piece.moves == 1
+        condition *= isinstance(piece, Pawn)
+
+        return condition

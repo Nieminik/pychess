@@ -99,12 +99,12 @@ def test_attack_range(pawn):  # noqa: D103
     grid = pawn.grid
 
     assert pawn.attack_range == get_expected_attack_range(
-        pawn, left=False, right=False)
+        pawn, left=True, right=True)
 
     p2_pos = Position(r + dir_val, c - 1)
     grid.add_piece(Pawn(p2_pos, pawn.color))
     assert pawn.attack_range == get_expected_attack_range(
-        pawn, left=False, right=False)
+        pawn, left=False, right=True)
 
     p3_pos = Position(r + dir_val, c + 1)
     grid.add_piece(Pawn(p3_pos, pawn.color))
@@ -120,6 +120,11 @@ def test_attack_range(pawn):  # noqa: D103
         pawn, left=True, right=True)
 
 
+def test_capture_not_possible(pawn):  # noqa: D103
+    r, c = pawn.position
+    assert not pawn.move((r + 1, c + 1))
+
+
 def test_an_passant(pawn):  # noqa: D103
     r, c = pawn.position
     grid = pawn.grid
@@ -127,14 +132,22 @@ def test_an_passant(pawn):  # noqa: D103
     p2_pos = Position(r, c - 1)
     grid.add_piece(Pawn(p2_pos, pawn.color))
     grid[p2_pos].moves = 1
-    assert pawn.attack_range == []
+    assert pawn.attack_range == get_expected_attack_range(
+        pawn, left=True, right=True)
+
+    grid[p2_pos].color = pawn.color.inverted()
+    assert pawn.attack_range == get_expected_attack_range(
+        pawn, left=True, right=True)
+
+    grid[p2_pos].moves = 0
+    assert pawn.attack_range == get_expected_attack_range(
+        pawn, left=True, right=True)
 
     p3_pos = Position(r, c + 1)
-    attacked_pos = Position(r + pawn.get_direction(pawn).value, c + 1)
+    attacked_pos = Position(r + pawn.get_direction(pawn).value, p3_pos.col)
     grid.add_piece(Pawn(p3_pos, pawn.color.inverted()))
     grid[p3_pos].moves = 1
-    assert pawn.attack_range == [attacked_pos]
 
     other = grid[p3_pos]
-    grid.move(pawn.position, attacked_pos)
+    assert grid.move(pawn.position, attacked_pos)
     assert grid.captured == [other]
