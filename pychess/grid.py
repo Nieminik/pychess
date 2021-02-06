@@ -49,4 +49,4 @@ class Grid(object):
     def report_capture(self, piece):
         """Keep track of captured pieces."""
         self.captured.append(piece)
-        self.pieces[piece.__class__].remove(piece)
+        self._pieces[piece.__class__].remove(piece)
