@@ -20,7 +20,7 @@ class Grid(object):
     
     @property
     def fields(self):
-        defaultdict(lambda: None, {p.position: p for p in pieces})
+        defaultdict(lambda: None, {p.position: p for p in self.pieces})
 
     def add_piece(self, piece):
         """Add a piece to the grid."""
