@@ -1,6 +1,7 @@
 """Module implementing grid functionality."""
 
 from itertools import chain
+from collections import defaultdict
 
 
 class Grid(object):
