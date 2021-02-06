@@ -44,7 +44,7 @@ def get_starting_grid():
     grid = Grid()
 
     for color, pieces_notations in STARTING_NOTATIONS.items():
-        pieces = prepare_pieces(pieces_notation, color)
+        pieces = prepare_pieces(pieces_notations, color)
         
     for piece in pieces:
         grid.add_piece(piece)
