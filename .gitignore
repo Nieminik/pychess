@@ -1,6 +1,7 @@
+.*
+
 __pycache__
 venv
-.tox
-.idea
 *.egg-info
-Pipfile*
+
+Pipfile.lock
