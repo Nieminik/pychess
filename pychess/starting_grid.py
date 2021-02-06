@@ -2,6 +2,7 @@
 
 from pychess.piece.position import Position
 from pychess.piece.color import Color
+from itertools import chain
 import pychess.piece.pieces as pieces
 
 from pychess.grid import Grid
@@ -28,14 +29,24 @@ STARTING_NOTATIONS = {
 }
 
 
+def prepare_pieces(pieces_notations, color):
+"""Prepare pieces for color"""
+    iters = []
+    for piece_csl, notations in pieces_notations.items():
+        pieces = map(lambda cls, n: cls(Position.get_pos(n), color), notations)
+        iters.append(pieces)
+        
+    return chain.from_iterable(iters)
+
+
 def get_starting_grid():
     """Create grid with starting chess position."""
     grid = Grid()
 
-    for color, piece_notations in STARTING_NOTATIONS.items():
-        for piece_cls, notations in piece_notations.items():
-            for notation_pos in notations:
-                piece = piece_cls(Position.get_pos(notation_pos), color)
-                grid.add_piece(piece)
+    for color, pieces_notations in STARTING_NOTATIONS.items():
+        pieces = prepare_pieces(pieces_notation, color)
+        
+    for piece in pieces:
+        grid.add_piece(piece)
 
     return grid
