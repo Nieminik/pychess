@@ -15,11 +15,11 @@ class Grid(object):
         return self.fields[item]
 
     @property
-    def pieces(self):
+    def pieces(self):  # noqa: D102
         return chain.from_iterable(self._pieces.values())
-    
+
     @property
-    def fields(self):
+    def fields(self):  # noqa: D102
         return defaultdict(lambda: None, {p.position: p for p in self.pieces})
 
     def add_piece(self, piece):
@@ -31,7 +31,7 @@ class Grid(object):
     def get_enemies(self, piece):
         """Get enemies of given piece."""
         inverted_color = piece.color.inverted()
-        
+
         return [x for x in self.pieces if x.color is inverted_color]
 
     def move(self, old_pos, new_pos):
