@@ -10,6 +10,13 @@ from collections import defaultdict
 from pychess.piece.position import Position
 from pychess.piece.pieces import King, Rook
 
+from enum import Enum, auto
+
+
+class Side(Enum):  # noqa: D101
+    Kingside = auto()
+    Queenside = auto()
+
 
 class Grid(object):
     """A class for containing pieces."""
@@ -66,12 +73,12 @@ class Grid(object):
         self.captured.append(piece)
         self._pieces[piece.__class__].remove(piece)
 
-    def castle(self, color, kingside=True):
+    def castle(self, color, side=Side.Kingside):
         """Perform a castle."""
         grid = deepcopy(self)
         king = next((x for x in grid._pieces[King] if x.color is color))
 
-        rook_c = 7 if kingside else 0
+        rook_c = 7 if side is Side.Kingside else 0
         rook = grid.fields[Position(king.position.row, rook_c)]
 
         if not rook or not isinstance(rook, Rook):
