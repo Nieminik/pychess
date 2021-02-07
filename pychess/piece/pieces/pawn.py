@@ -58,7 +58,7 @@ class Pawn(Piece):
         if new_pos in self.move_range:
             move_possible = True
         elif new_pos in self.attack_range and other:
-            move_possible = other.color != self.color
+            move_possible = other.color is not self.color
         else:
             dir_val = self.get_direction(self).value
             an_passant_pos = Position(new_pos.row - dir_val, new_pos.col)
@@ -67,7 +67,7 @@ class Pawn(Piece):
                 an_passant_victim, self)
             an_passant = move_possible and an_passant_victim
 
-        move_succeeded = super().move(value) if move_possible else False
+        move_succeeded = super().move_raw(new_pos) if move_possible else False
 
         if move_succeeded and an_passant:
             self.grid.report_capture(an_passant)

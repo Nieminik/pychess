@@ -22,12 +22,12 @@ def test_move(piece):  # noqa: D103
     r, c = piece.position
     moves = piece.moves
 
-    piece._mv_range = product(range(MAX_POS), repeat=2)
+    piece._mv_range = list(product(range(MAX_POS), repeat=2))
 
     assert not piece.move(Position(r, c))
     assert piece.moves == moves
 
-    piece.move(Position(r ^ 1, c ^ 1))
+    assert piece.move(Position(r ^ 1, c ^ 1))
     assert piece.moves == moves + 1
 
     piece.move(Position(r, c))
