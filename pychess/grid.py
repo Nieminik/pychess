@@ -21,7 +21,7 @@ class Grid(object):
     def __getitem__(self, item):  # noqa: D105
         return self.fields[item]
 
-    def __deepcopy__(self, memo):
+    def __deepcopy__(self, memo):  # noqa: D105
         cls = self.__class__
         result = cls.__new__(cls)
         memo[id(self)] = result
@@ -67,6 +67,7 @@ class Grid(object):
         self._pieces[piece.__class__].remove(piece)
 
     def castle(self, color, kingside=True):
+        """Perform a castle."""
         grid = deepcopy(self)
         king = next((x for x in grid._pieces[King] if x.color is color))
 
