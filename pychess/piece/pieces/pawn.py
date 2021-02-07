@@ -44,7 +44,7 @@ class Pawn(Piece):
         for n_col in (col + 1, col - 1):
             pos = Position(n_row, n_col)
             other = self.grid[pos]
-            if pos.is_valid() and not other or other.color != self.color:
+            if pos.is_valid() and (not other or other.color != self.color):
                 rng.append(pos)
 
         return rng

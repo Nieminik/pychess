@@ -120,6 +120,14 @@ def test_attack_range(pawn):  # noqa: D103
         pawn, left=True, right=True)
 
 
+def test_attack_range_invalid_pos(pawn):  # noqa: D103
+    pawn._pos = Position(0, 0)
+    assert pawn.attack_range == [(1, 1)]
+
+    pawn._pos = Position(0, 7)
+    assert pawn.attack_range == [(1, 6)]
+
+
 def test_capture_not_possible(pawn):  # noqa: D103
     r, c = pawn.position
     assert not pawn.move((r + 1, c + 1))
