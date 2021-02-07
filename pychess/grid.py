@@ -1,7 +1,14 @@
 """Module implementing grid functionality."""
 
+import math
+
+from copy import deepcopy
+
 from itertools import chain
 from collections import defaultdict
+
+from pychess.piece.position import Position
+from pychess.piece.pieces import King, Rook
 
 
 class Grid(object):
@@ -13,6 +20,14 @@ class Grid(object):
 
     def __getitem__(self, item):  # noqa: D105
         return self.fields[item]
+
+    def __deepcopy__(self, memo):
+        cls = self.__class__
+        result = cls.__new__(cls)
+        memo[id(self)] = result
+        for k, v in self.__dict__.items():
+            setattr(result, k, deepcopy(v, memo))
+        return result
 
     @property
     def pieces(self):  # noqa: D102
@@ -50,3 +65,35 @@ class Grid(object):
         """Keep track of captured pieces."""
         self.captured.append(piece)
         self._pieces[piece.__class__].remove(piece)
+
+    def castle(self, color, kingside=True):
+        grid = deepcopy(self)
+        king = next((x for x in grid._pieces[King] if x.color is color))
+
+        rook_c = 7 if kingside else 0
+        rook = grid.fields[Position(king.position.row, rook_c)]
+
+        if not rook or not isinstance(rook, Rook):
+            return False
+
+        if king.moves or rook.moves:
+            return False
+
+        direction = int(math.copysign(1, rook_c - king.position.col))
+        moved = rook.move(
+            Position(king.position.row, king.position.col + direction))
+
+        if not moved:
+            return False
+
+        grid._pieces[Rook].remove(rook)
+        for i in range(2):
+            moved = king.move(
+                Position(king.position.row, king.position.col + direction))
+            if not moved:
+                return False
+
+        grid._pieces[Rook].append(rook)
+
+        self._pieces = grid._pieces
+        return True
