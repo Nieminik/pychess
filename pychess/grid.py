@@ -81,10 +81,9 @@ class Grid(object):
             return False
 
         direction = int(math.copysign(1, rook_c - king.position.col))
-        moved = rook.move(
-            Position(king.position.row, king.position.col + direction))
+        move_pos = Position(king.position.row, king.position.col + direction)
 
-        if not moved:
+        if grid[move_pos] or not rook.move(move_pos):
             return False
 
         grid._pieces[Rook].remove(rook)
