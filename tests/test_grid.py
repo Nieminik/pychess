@@ -74,9 +74,13 @@ def test_access_field(grid, mocker):  # noqa: D103
 def test_move(grid, mocker):  # noqa: D103
     piece_mock = mocker.MagicMock()
     piece_mock.position = (1, 1)
-    grid.add_piece(piece_mock)
 
+    grid.add_piece(piece_mock)
     grid.move((1, 1), (1, 2))
+
+    piece_mock.move.assert_called_once_with((1, 2))
+    piece_mock.position = (1, 2)
+
     assert grid[(1, 1)] is None
     assert grid[(1, 2)] == piece_mock
 
@@ -94,3 +98,8 @@ def test_captured(grid, mocker):  # noqa: D103
     grid.move((1, 1), (1, 2))
 
     assert grid.captured == [piece_mock2]
+    assert piece_mock2 not in grid.fields.values()
+
+    grid.report_capture(piece_mock)
+    assert grid.captured == [piece_mock2, piece_mock]
+    assert piece_mock not in grid.fields.values()

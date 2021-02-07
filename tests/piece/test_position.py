@@ -1,21 +1,59 @@
 """Tests for piece position class."""
 
-from pychess.piece.position import Position
+import pytest
+from pychess.piece.position import (
+    Position, InvalidNotationError, InvalidPositionError)
+
+NOTATIONS_COORDS = {
+    "a1": (0, 0),
+    "c3": (2, 2),
+    "c4": (3, 2),
+    "e5": (4, 4),
+    "a7": (6, 0)
+}
+
+COORDS_NOTATIONS = {v: k for k, v in NOTATIONS_COORDS.items()}
+
+INVALID_NOTATIONS = ("02", "/3", "--", "i2", "3a", "a32", "a", "2", "")
+
+INVALID_COORDS = ((-1, 2), (8, 1), (2, 8), (8, 8), (3, -1), (-2, -3))
 
 
-def test_init():  # noqa: D103
-    p1 = Position(1, 2)
+@pytest.mark.parametrize("coords", COORDS_NOTATIONS)
+def test_init(coords):  # noqa: D103
+    p1 = Position(*coords)
     r, c = p1
-    assert r, c == (1, 2)
+    assert (r, c) == coords
 
 
-def test_translate():  # noqa: D103
-    assert Position.translate_pos("a1") == (0, 0)
-    assert Position.translate_pos("c3") == (2, 2)
-    assert Position.translate_pos("c4") == (2, 3)
+@pytest.mark.parametrize("coords", COORDS_NOTATIONS)
+def test_valid(coords):  # noqa: D103
+    assert Position(*coords).is_valid()
 
 
-def test_get():  # noqa: D103
-    p1 = Position.get_pos("b1")
-    r, c = p1
-    assert r, c == (1, 0)
+@pytest.mark.parametrize("coords", INVALID_COORDS)
+def test_invalid(coords):  # noqa: D103
+    assert not Position(*coords).is_valid()
+
+
+@pytest.mark.parametrize("notation, coords", NOTATIONS_COORDS.items())
+def test_get_pos(notation, coords):  # noqa: D103
+    assert Position.get_pos(notation) == Position(*coords)
+
+
+@pytest.mark.parametrize("coords, notation", COORDS_NOTATIONS.items())
+def test_get_notation(coords, notation):  # noqa: D103
+    position = Position(*coords)
+    assert position.get_notation() == notation
+
+
+@pytest.mark.parametrize("notation", INVALID_NOTATIONS)
+def test_invalid_get_pos(notation):  # noqa: D103
+    with pytest.raises(InvalidNotationError):
+        Position.get_pos(notation)
+
+
+@pytest.mark.parametrize("coords", INVALID_COORDS)
+def test_invalid_get_notation(coords):  # noqa: D103
+    with pytest.raises(InvalidPositionError):
+        Position(*coords).get_notation()

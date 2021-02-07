@@ -1,0 +1,19 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pylint = "*"
+jupyter = "*"
+notebook = "*"
+rope = "*"
+autopep8 = "*"
+pytest = "*"
+pytest-mock = "*"
+tox = "*"
+
+[packages]
+
+[requires]
+python_version = "3"
