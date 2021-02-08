@@ -19,7 +19,9 @@ COORDS_GROUP = (
 @pytest.fixture
 def bishop():  # noqa: D103
     grid = Grid()
-    return Bishop(Position(1, 1), grid=grid)
+    bishop = Bishop(Position(1, 1))
+    grid.add_piece(bishop)
+    return bishop
 
 
 @pytest.mark.parametrize("coords", COORDS_GROUP)

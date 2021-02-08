@@ -21,7 +21,9 @@ COORDS_GROUP = (
 @pytest.fixture
 def rook():  # noqa: D103
     grid = Grid()
-    return Rook(Position(1, 1), grid=grid)
+    rook = Rook(Position(1, 1))
+    grid.add_piece(rook)
+    return rook
 
 
 @pytest.mark.parametrize("coords", COORDS_GROUP)

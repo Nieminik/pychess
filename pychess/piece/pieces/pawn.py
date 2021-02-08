@@ -15,10 +15,10 @@ class Direction(Enum):
 
 
 class Pawn(Piece):
-    """Represent a queen object."""
+    """Represent a pawn object."""
 
-    def __init__(self, position, color=Color.White, grid=None):
-        super(Pawn, self).__init__(position, color, grid)
+    def __init__(self, position, color=Color.White):
+        super().__init__(position, color)
         self.move_attacks = False
 
     @property

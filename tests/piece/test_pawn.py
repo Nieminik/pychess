@@ -72,7 +72,7 @@ def test_pawn_range_obstruction(pawn):  # noqa: D103
     grid = pawn.grid
     assert pawn.move_range == get_expected_move_range(pawn, two_positions=True)
 
-    p2 = Pawn(Position(r + 1, c), pawn.color, grid)
+    p2 = Pawn(Position(r + 1, c), pawn.color)
     grid.add_piece(p2)
     assert pawn.move_range == []
 
@@ -85,7 +85,7 @@ def test_pawn_range_obstruction(pawn):  # noqa: D103
     pawn.moves += 1
     assert pawn.move_range == get_expected_move_range(pawn, False)
 
-    p3 = Pawn(Position(r + 2, c), pawn.color.inverted(), grid)
+    p3 = Pawn(Position(r + 2, c), pawn.color.inverted())
     grid.add_piece(p3)
     assert pawn.move_range == get_expected_move_range(pawn, False)
 
