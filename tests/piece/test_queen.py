@@ -31,7 +31,7 @@ def test_queen_ranges(coords, queen):  # noqa: D103
     queen.move(coords)
     queen.grid.add_piece(queen)
 
-    exp_ranges = chain(diagonal(queen),  horizontal(queen),  vertical(queen))
+    exp_ranges = chain(diagonal(queen), horizontal(queen), vertical(queen))
 
     assert sorted(queen.move_range) == sorted(queen.attack_range)
     assert sorted(exp_ranges) == sorted(queen.move_range)
