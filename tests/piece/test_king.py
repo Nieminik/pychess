@@ -31,8 +31,7 @@ def king():  # noqa: D103
 
 @pytest.mark.parametrize("coords", COORDS_GROUP)
 def test_king_ranges(coords, king):  # noqa: D103
-    king.move(coords)
-    king.grid.add_piece(king)
+    king._pos = Position(*coords)
 
     exp_ranges = chain(
         diagonal(king, 4), horizontal(king, 2), vertical(king, 2))
@@ -83,7 +82,7 @@ def test_king_attacked_move_fields(color, king):  # noqa: D103
     assert sorted(king.move_range) == sorted(expected_range)
 
     bishop.color = bishop.color.inverted()
-    expected_range = expected_range - set(bishop.attack_range) 
+    expected_range = expected_range - set(bishop.attack_range)
     expected_range.add(Position(bishop.position.row, bishop.position.col))
 
     assert sorted(king.move_range) == sorted(expected_range)

@@ -4,7 +4,7 @@ import pytest
 
 from pychess.grid import Grid
 from pychess.piece.position import Position, MAX_POS
-from pychess.piece.pieces import Queen
+import pychess.piece.pieces as pieces
 
 from pychess.piece.move_iters import diagonal, horizontal, vertical
 
@@ -21,15 +21,14 @@ COORDS_GROUP = (
 @pytest.fixture
 def queen():  # noqa: D103
     grid = Grid()
-    queen = Queen(Position(1, 1))
+    queen = pieces.Queen(Position(1, 1))
     grid.add_piece(queen)
     return queen
 
 
 @pytest.mark.parametrize("coords", COORDS_GROUP)
 def test_queen_ranges(coords, queen):  # noqa: D103
-    queen.move(coords)
-    queen.grid.add_piece(queen)
+    queen._pos = Position(*coords)
 
     exp_ranges = chain(diagonal(queen), horizontal(queen), vertical(queen))
 

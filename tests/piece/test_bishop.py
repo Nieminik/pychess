@@ -4,7 +4,7 @@ import pytest
 
 from pychess.grid import Grid
 from pychess.piece.position import Position, MAX_POS
-from pychess.piece.pieces.bishop import Bishop
+import pychess.piece.pieces as pieces
 
 from pychess.piece.move_iters import diagonal
 
@@ -19,15 +19,14 @@ COORDS_GROUP = (
 @pytest.fixture
 def bishop():  # noqa: D103
     grid = Grid()
-    bishop = Bishop(Position(1, 1))
+    bishop = pieces.Bishop(Position(1, 1))
     grid.add_piece(bishop)
     return bishop
 
 
 @pytest.mark.parametrize("coords", COORDS_GROUP)
 def test_bishop_ranges(coords, bishop):  # noqa: D103
-    bishop.move(coords)
-    bishop.grid.add_piece(bishop)
+    bishop._pos = Position(*coords)
 
     assert sorted(bishop.move_range) == sorted(bishop.attack_range)
     assert sorted(diagonal(bishop)) == sorted(bishop.move_range)

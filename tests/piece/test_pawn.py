@@ -4,7 +4,7 @@ import pytest
 
 from pychess.grid import Grid
 from pychess.piece.position import Position
-from pychess.piece.pieces.pawn import Pawn
+import pychess.piece.pieces as pieces
 from pychess.piece.color import Color
 
 
@@ -19,7 +19,7 @@ PAWN_RANGE_TEST_DATA = (
 @pytest.fixture
 def pawn():  # noqa: D103
     grid = Grid()
-    pawn = Pawn(Position(1, 1))
+    pawn = pieces.Pawn(Position(1, 1))
     grid.add_piece(pawn)
     return pawn
 
@@ -27,7 +27,7 @@ def pawn():  # noqa: D103
 def get_expected_move_range(pawn, two_positions=False):
     """Get expected move range."""
     r, c = pawn.position
-    dir_val = Pawn.get_direction(pawn).value
+    dir_val = pieces.Pawn.get_direction(pawn).value
     expected = [Position(r + dir_val, c)]
     if two_positions:
         expected.append(Position(r + dir_val * 2, c))
@@ -37,7 +37,7 @@ def get_expected_move_range(pawn, two_positions=False):
 def get_expected_attack_range(pawn, left=True, right=True):
     """Get expected move range."""
     r, c = pawn.position
-    dir_val = Pawn.get_direction(pawn).value
+    dir_val = pieces.Pawn.get_direction(pawn).value
     left_right = []
     if right:
         left_right.append(1)
@@ -72,7 +72,7 @@ def test_pawn_range_obstruction(pawn):  # noqa: D103
     grid = pawn.grid
     assert pawn.move_range == get_expected_move_range(pawn, two_positions=True)
 
-    p2 = Pawn(Position(r + 1, c), pawn.color)
+    p2 = pieces.Pawn(Position(r + 1, c), pawn.color)
     grid.add_piece(p2)
     assert pawn.move_range == []
 
@@ -85,7 +85,7 @@ def test_pawn_range_obstruction(pawn):  # noqa: D103
     pawn.moves += 1
     assert pawn.move_range == get_expected_move_range(pawn, False)
 
-    p3 = Pawn(Position(r + 2, c), pawn.color.inverted())
+    p3 = pieces.Pawn(Position(r + 2, c), pawn.color.inverted())
     grid.add_piece(p3)
     assert pawn.move_range == get_expected_move_range(pawn, False)
 
@@ -102,12 +102,12 @@ def test_attack_range(pawn):  # noqa: D103
         pawn, left=True, right=True)
 
     p2_pos = Position(r + dir_val, c - 1)
-    grid.add_piece(Pawn(p2_pos, pawn.color))
+    grid.add_piece(pieces.Pawn(p2_pos, pawn.color))
     assert pawn.attack_range == get_expected_attack_range(
         pawn, left=False, right=True)
 
     p3_pos = Position(r + dir_val, c + 1)
-    grid.add_piece(Pawn(p3_pos, pawn.color))
+    grid.add_piece(pieces.Pawn(p3_pos, pawn.color))
     assert pawn.attack_range == get_expected_attack_range(
         pawn, left=False, right=False)
 
@@ -138,7 +138,7 @@ def test_an_passant(pawn):  # noqa: D103
     grid = pawn.grid
 
     p2_pos = Position(r, c - 1)
-    grid.add_piece(Pawn(p2_pos, pawn.color))
+    grid.add_piece(pieces.Pawn(p2_pos, pawn.color))
     grid[p2_pos].moves = 1
     assert pawn.attack_range == get_expected_attack_range(
         pawn, left=True, right=True)
@@ -153,7 +153,7 @@ def test_an_passant(pawn):  # noqa: D103
 
     p3_pos = Position(r, c + 1)
     attacked_pos = Position(r + pawn.get_direction(pawn).value, p3_pos.col)
-    grid.add_piece(Pawn(p3_pos, pawn.color.inverted()))
+    grid.add_piece(pieces.Pawn(p3_pos, pawn.color.inverted()))
     grid[p3_pos].moves = 1
 
     other = grid[p3_pos]
