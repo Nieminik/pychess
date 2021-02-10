@@ -8,7 +8,7 @@ from itertools import chain
 from collections import defaultdict
 
 from pychess.piece.position import Position
-from pychess.piece.pieces import King, Rook
+import pychess.piece.pieces as piece_types
 
 from enum import Enum, auto
 
@@ -76,12 +76,14 @@ class Grid(object):
     def castle(self, color, side=Side.Kingside):
         """Perform a castle."""
         grid = deepcopy(self)
-        king = next((x for x in grid._pieces[King] if x.color is color))
+        king = next(
+            (x for x in grid._pieces[piece_types.King] if x.color is color)
+        )
 
         rook_c = 7 if side is Side.Kingside else 0
         rook = grid.fields[Position(king.position.row, rook_c)]
 
-        if not rook or not isinstance(rook, Rook):
+        if not rook or not isinstance(rook, piece_types.Rook):
             return False
 
         if king.moves or rook.moves:
@@ -93,14 +95,27 @@ class Grid(object):
         if grid[move_pos] or not rook.move(move_pos):
             return False
 
-        grid._pieces[Rook].remove(rook)
+        grid._pieces[piece_types.Rook].remove(rook)
         for i in range(2):
             moved = king.move(
                 Position(king.position.row, king.position.col + direction))
             if not moved:
                 return False
 
-        grid._pieces[Rook].append(rook)
+        grid._pieces[piece_types.Rook].append(rook)
 
         self._pieces = grid._pieces
         return True
+
+    def own_king_in_check(self, piece):
+        """Check if king of piece's color is in check right now."""
+        k = next(filter(
+            lambda p: p.color == piece.color,
+            self._pieces.get(piece_types.King, [])), None)
+
+        if k:
+            enemies = self.get_enemies(k)
+            attacks = list(
+                chain.from_iterable([e.attack_range for e in enemies]))
+            return k.position in attacks
+        return False
