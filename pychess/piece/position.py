@@ -18,7 +18,7 @@ class InvalidPositionError(Exception):
 class Position(position_tup):
     """Position class."""
 
-    def __add__(self, other):  # noqa: D103
+    def __add__(self, other):  # noqa: D105
         r = self.row + other.row
         c = self.col + other.col
         return Position(r, c)
