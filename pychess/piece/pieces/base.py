@@ -7,10 +7,10 @@ from pychess.piece.position import Position
 class Piece(object):
     """Generic piece class."""
 
-    def __init__(self, position, color=Color.White, grid=None):
+    def __init__(self, position, color=Color.White):
         self._pos = Position(*position)
         self.color = color
-        self.grid = grid
+        self.grid = None
         self.moves = 0
         self.move_attacks = True
         self._mv_range = []
@@ -27,15 +27,18 @@ class Piece(object):
     def position(self):  # noqa: D102
         return self._pos
 
-    def move(self, value):  # noqa: D102
-        new_pos = Position(*value)
-        if new_pos == self._pos:
+    def move_raw(self, position):  # noqa: D102
+        if position == self._pos:
             return False
 
-        if new_pos in self.move_range or new_pos in self.attack_range:
-            self.moves += 1
-            self._pos = new_pos
-            return True
+        self.moves += 1
+        self._pos = position
+        return True
+
+    def move(self, position):  # noqa: D102
+        new_pos = Position(*position)
+        if new_pos in self.move_range:
+            return self.move_raw(new_pos)
 
         return False
 

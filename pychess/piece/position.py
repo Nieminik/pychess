@@ -18,6 +18,11 @@ class InvalidPositionError(Exception):
 class Position(position_tup):
     """Position class."""
 
+    def __add__(self, other):  # noqa: D105
+        r = self.row + other.row
+        c = self.col + other.col
+        return Position(r, c)
+
     def is_valid(self):
         """Validate position."""
         return MIN_POS <= self.row < MAX_POS and MIN_POS <= self.col < MAX_POS

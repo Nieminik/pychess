@@ -3,6 +3,7 @@
 import pytest
 from pychess.piece.position import (
     Position, InvalidNotationError, InvalidPositionError)
+from itertools import product
 
 NOTATIONS_COORDS = {
     "a1": (0, 0),
@@ -57,3 +58,11 @@ def test_invalid_get_pos(notation):  # noqa: D103
 def test_invalid_get_notation(coords):  # noqa: D103
     with pytest.raises(InvalidPositionError):
         Position(*coords).get_notation()
+
+
+@pytest.mark.parametrize("coords", NOTATIONS_COORDS.values())
+def test_add(coords):  # noqa: D103
+    diffs = product(range(-2, 3), repeat=2)
+    for dr, dc in diffs:
+        r, c = coords
+        assert Position(r, c) + Position(dr, dc) == (r + dr, c + dc)

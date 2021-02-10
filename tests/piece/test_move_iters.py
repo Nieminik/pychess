@@ -12,14 +12,16 @@ from pychess.piece.position import Position, MAX_POS, MIN_POS
 @pytest.fixture
 def piece():  # noqa: D103
     grid = Grid()
-    return Piece((4, 4), grid=grid)
+    piece = Piece((4, 4))
+    grid.add_piece(piece)
+    return piece
 
 
 @pytest.fixture
 def collision_setup(piece):  # noqa: D103
     grid = piece.grid
     p2 = Piece(Position(piece.position.row, piece.position.col + 1),
-               piece.color, grid)
+               piece.color)
     grid.add_piece(piece)
     grid.add_piece(p2)
     r = right(piece)

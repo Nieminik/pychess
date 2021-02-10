@@ -10,6 +10,13 @@ from collections import defaultdict
 from pychess.piece.position import Position
 from pychess.piece.pieces import King, Rook
 
+from enum import Enum, auto
+
+
+class Side(Enum):  # noqa: D101
+    Kingside = auto()
+    Queenside = auto()
+
 
 class Grid(object):
     """A class for containing pieces."""
@@ -21,7 +28,7 @@ class Grid(object):
     def __getitem__(self, item):  # noqa: D105
         return self.fields[item]
 
-    def __deepcopy__(self, memo):
+    def __deepcopy__(self, memo):  # noqa: D105
         cls = self.__class__
         result = cls.__new__(cls)
         memo[id(self)] = result
@@ -66,11 +73,12 @@ class Grid(object):
         self.captured.append(piece)
         self._pieces[piece.__class__].remove(piece)
 
-    def castle(self, color, kingside=True):
+    def castle(self, color, side=Side.Kingside):
+        """Perform a castle."""
         grid = deepcopy(self)
         king = next((x for x in grid._pieces[King] if x.color is color))
 
-        rook_c = 7 if kingside else 0
+        rook_c = 7 if side is Side.Kingside else 0
         rook = grid.fields[Position(king.position.row, rook_c)]
 
         if not rook or not isinstance(rook, Rook):
@@ -80,10 +88,9 @@ class Grid(object):
             return False
 
         direction = int(math.copysign(1, rook_c - king.position.col))
-        moved = rook.move(
-            Position(king.position.row, king.position.col + direction))
+        move_pos = Position(king.position.row, king.position.col + direction)
 
-        if not moved:
+        if grid[move_pos] or not rook.move(move_pos):
             return False
 
         grid._pieces[Rook].remove(rook)
