@@ -3,7 +3,7 @@
 import pytest
 
 from pychess.grid import Grid
-from pychess.piece.position import Position
+from pychess.piece.position import Position, MAX_POS
 from pychess.piece.pieces.rook import Rook
 
 from pychess.piece.move_iters import horizontal, vertical
@@ -35,3 +35,16 @@ def test_rook_ranges(coords, rook):  # noqa: D103
 
     test_range = chain(horizontal(rook), vertical(rook))
     assert sorted(test_range) == sorted(rook.move_range)
+
+
+def test_rook_incorrect_move(rook):  # noqa: D103
+    assert not rook.move(rook.position)
+    assert not rook.move(
+        Position(rook.position.row + 1, rook.position.col + 1))
+    assert not rook.move(
+        Position(rook.position.row - 1, rook.position.col + 1))
+
+    assert not rook.move(Position(MAX_POS, rook.position.col))
+    assert not rook.move(Position(-1, rook.position.col))
+    assert not rook.move(Position(rook.position.row, MAX_POS))
+    assert not rook.move(Position(rook.position.row, -1))
