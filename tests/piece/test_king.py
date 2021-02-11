@@ -7,9 +7,10 @@ from pychess.piece.color import Color
 from pychess.piece.position import Position, MAX_POS
 import pychess.piece.pieces as pieces
 
+from itertools import chain
+
 from pychess.piece.move_iters import diagonal, horizontal, vertical
 
-from itertools import chain
 
 COORDS_GROUP = (
     (1, 2),
@@ -55,34 +56,36 @@ def test_king_incorrect_move(wrong_move_pos, king):  # noqa: D103
 def test_king_attacked_move_fields(color, king):  # noqa: D103
     grid = king.grid
     king.color = color
-
-    start_move_range = set(king.move_range)
+    start_pos = king.position
 
     rook = pieces.Rook(
-        Position(king.position.row + 2, king.position.col + 1),
+        king.position + Position(2, 1),
         color=color.inverted())
     grid.add_piece(rook)
 
-    expected_range = start_move_range - set(rook.attack_range)
-
-    assert king.move_range != king.attack_range
-    assert sorted(king.move_range) == sorted(expected_range)
+    move_pos = king.position + Position(0, 1)
+    assert not king.move(move_pos)
 
     rook.color = rook.color.inverted()
-    assert sorted(king.move_range) != sorted(expected_range)
+    assert king.move(move_pos)
+
     rook.color = rook.color.inverted()
+    assert king.move(start_pos)
 
     bishop = pieces.Bishop(
-        Position(king.position.row, king.position.col + 1),
-        color=color)
+        king.position + Position(0, 1),
+        color=color.inverted())
     grid.add_piece(bishop)
 
-    # bishop now blocks two fields of rook's attack range
-    expected_range.add(Position(bishop.position.row - 1, bishop.position.col))
-    assert sorted(king.move_range) == sorted(expected_range)
+    move_pos = start_pos + Position(-1, 0)
+    assert not king.move(move_pos)
+    assert not king.move(bishop.position)
+    assert king.move(bishop.position + Position(-1, 0))
 
     bishop.color = bishop.color.inverted()
-    expected_range = expected_range - set(bishop.attack_range)
-    expected_range.add(Position(bishop.position.row, bishop.position.col))
+    assert king.move(move_pos)
+    assert king.move(start_pos)
 
-    assert sorted(king.move_range) == sorted(expected_range)
+    grid.report_capture(rook)
+    bishop.color = bishop.color.inverted()
+    assert king.move(bishop.position)

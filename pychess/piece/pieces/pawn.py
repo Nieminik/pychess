@@ -67,7 +67,7 @@ class Pawn(Piece):
                 an_passant_victim, self)
             an_passant = move_possible and an_passant_victim
 
-        move_succeeded = super().move_raw(new_pos) if move_possible else False
+        move_succeeded = super().move(new_pos) if move_possible else False
 
         if move_succeeded and an_passant:
             self.grid.report_capture(an_passant)

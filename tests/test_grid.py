@@ -3,6 +3,8 @@
 import pytest
 from pychess.grid import Grid
 from pychess.piece.pieces.base import Piece
+import pychess.piece.pieces as piece_types
+from pychess.piece.position import Position
 from pychess.piece.color import Color
 
 
@@ -103,3 +105,29 @@ def test_captured(grid, mocker):  # noqa: D103
     grid.report_capture(piece_mock)
     assert grid.captured == [piece_mock2, piece_mock]
     assert piece_mock not in grid.fields.values()
+
+
+def test_in_check(grid):  # noqa: D103
+    king = piece_types.King(Position(0, 0))
+    rook = piece_types.Rook(Position(0, 1), Color.Black)
+
+    assert not grid.own_king_in_check(king)
+
+    grid.add_piece(king)
+    grid.add_piece(rook)
+    assert grid.own_king_in_check(king)
+
+    grid.report_capture(rook)
+    assert not grid.own_king_in_check(king)
+
+
+def test_can_move(grid):  # noqa: D103
+    king = piece_types.King(Position(0, 0))
+    rook = piece_types.Rook(Position(3, 1), Color.Black)
+    grid.add_piece(king)
+    grid.add_piece(rook)
+    assert grid.can_move(king.position, king.position + Position(1, 0))
+
+    assert not grid.can_move(king.position, king.position + Position(0, 1))
+    grid.report_capture(rook)
+    assert grid.can_move(king.position, king.position + Position(0, 1))
