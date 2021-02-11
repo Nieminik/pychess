@@ -56,6 +56,22 @@ class Grid(object):
 
         return [x for x in self.pieces if x.color is inverted_color]
 
+    def can_move(self, old_pos, new_pos):
+        """Check if king will be in check after the move."""
+        piece = self[old_pos]
+        other = self[new_pos]
+        if other:
+            self._pieces[type(other)].remove(other)
+        piece._pos = new_pos
+
+        in_check = self.own_king_in_check(piece)
+
+        if other:
+            self._pieces[type(other)].append(other)
+        piece._pos = old_pos
+
+        return not in_check
+
     def move(self, old_pos, new_pos):
         """Move piece."""
         piece = self[old_pos]
