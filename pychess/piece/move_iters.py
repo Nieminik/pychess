@@ -41,22 +41,22 @@ def _iterate_evenly(*iters, max_iters=None):
 
 def up(piece):
     """Generate up positions for given piece."""
-    return _pos_iter(piece, lambda r, c: (r + 1, c))
+    return _pos_iter(piece, lambda r, f: (r + 1, f))
 
 
 def down(piece):
     """Generate down positions for given piece."""
-    return _pos_iter(piece, lambda r, c: (r - 1, c))
+    return _pos_iter(piece, lambda r, f: (r - 1, f))
 
 
 def left(piece):
     """Generate left positions for given piece."""
-    return _pos_iter(piece, lambda r, c: (r, c - 1))
+    return _pos_iter(piece, lambda r, f: (r, f - 1))
 
 
 def right(piece):
     """Generate right positions for given piece."""
-    return _pos_iter(piece, lambda r, c: (r, c + 1))
+    return _pos_iter(piece, lambda r, f: (r, f + 1))
 
 
 def horizontal(piece, max_iters=None):
@@ -69,14 +69,14 @@ def vertical(piece, max_iters=None):
     return _iterate_evenly(up(piece), down(piece), max_iters=max_iters)
 
 
-def _diagonal_helper(r, c, rd, cd):
-    return r + rd, c + cd
+def _diagonal_helper(r, f, rd, fd):
+    return r + rd, f + fd
 
 
 def diagonal(piece, max_iters=None):
     """Generate diagonal positions for given piece."""
     diffs = list(product([1, -1], repeat=2))
-    funcs = (partial(_diagonal_helper, rd=rd, cd=cd) for rd, cd in diffs)
+    funcs = (partial(_diagonal_helper, rd=rd, fd=fd) for rd, fd in diffs)
     iters = (_pos_iter(piece, func) for func in funcs)
 
     return _iterate_evenly(*iters, max_iters=max_iters)

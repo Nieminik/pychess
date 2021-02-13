@@ -30,6 +30,9 @@ class Piece(object):
     def move(self, position):  # noqa: D102
         new_pos = Position(*position)
 
+        if not new_pos.is_valid():
+            return False
+
         if new_pos not in self.move_range + self.attack_range:
             return False
 

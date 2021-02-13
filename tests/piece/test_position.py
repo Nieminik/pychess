@@ -23,8 +23,8 @@ INVALID_COORDS = ((-1, 2), (8, 1), (2, 8), (8, 8), (3, -1), (-2, -3))
 @pytest.mark.parametrize("coords", COORDS_NOTATIONS)
 def test_init(coords):  # noqa: D103
     p1 = Position(*coords)
-    r, c = p1
-    assert (r, c) == coords
+    r, f = p1
+    assert (r, f) == coords
 
 
 @pytest.mark.parametrize("coords", COORDS_NOTATIONS)
@@ -63,6 +63,6 @@ def test_invalid_get_notation(coords):  # noqa: D103
 @pytest.mark.parametrize("coords", NOTATIONS_COORDS.values())
 def test_add(coords):  # noqa: D103
     diffs = product(range(-2, 3), repeat=2)
-    for dr, dc in diffs:
-        r, c = coords
-        assert Position(r, c) + Position(dr, dc) == (r + dr, c + dc)
+    for dr, df in diffs:
+        r, f = coords
+        assert Position(r, f) + Position(dr, df) == (r + dr, f + df)

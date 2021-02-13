@@ -15,8 +15,8 @@ class Knight(Piece):
         diffs += [tuple(reversed(x)) for x in diffs]
         rng = []
 
-        for d_row, d_col in diffs:
-            pos = self.position + Position(d_row, d_col)
+        for d_rank, d_file in diffs:
+            pos = self.position + Position(d_rank, d_file)
             other = self.grid[pos]
             other_is_friend = other and other.color == self.color
 

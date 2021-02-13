@@ -20,7 +20,7 @@ def piece():  # noqa: D103
 @pytest.fixture
 def collision_setup(piece):  # noqa: D103
     grid = piece.grid
-    p2 = Piece(Position(piece.position.row, piece.position.col + 1),
+    p2 = Piece(piece.position + Position(0, 1),
                piece.color)
     grid.add_piece(piece)
     grid.add_piece(p2)
@@ -37,85 +37,87 @@ start_positions = (
 
 def _basic_iters_test_helper(piece, pos, func, transformation):
     piece._pos = pos
-    row, col = piece.position
-    for r, c in func(piece):
-        row, col = transformation(row, col)
-        assert r == row
-        assert c == col
+    p_rank, p_file = piece.position
+    for r, f in func(piece):
+        p_rank, p_file = transformation(p_rank, p_file)
+        assert r == p_rank
+        assert f == p_file
 
 
 @pytest.mark.parametrize("pos", start_positions)
 def test_up(piece, pos):  # noqa: D103
-    _basic_iters_test_helper(piece, pos, up, lambda r, c: (r + 1, c))
+    _basic_iters_test_helper(piece, pos, up, lambda r, f: (r + 1, f))
 
 
 @pytest.mark.parametrize("pos", start_positions)
 def test_down(piece, pos):  # noqa: D103
-    _basic_iters_test_helper(piece, pos, down, lambda r, c: (r - 1, c))
+    _basic_iters_test_helper(piece, pos, down, lambda r, f: (r - 1, f))
 
 
 @pytest.mark.parametrize("pos", start_positions)
 def test_left(piece, pos):  # noqa: D103
-    _basic_iters_test_helper(piece, pos, left, lambda r, c: (r, c - 1))
+    _basic_iters_test_helper(piece, pos, left, lambda r, f: (r, f - 1))
 
 
 @pytest.mark.parametrize("pos", start_positions)
 def test_right(piece, pos):  # noqa: D103
-    _basic_iters_test_helper(piece, pos, right, lambda r, c: (r, c + 1))
+    _basic_iters_test_helper(piece, pos, right, lambda r, f: (r, f + 1))
 
 
 def test_horizontal_center(piece):  # noqa: D103
-    row, col = piece.position
+    start_pos = piece.position
     hor = horizontal(piece)
-    n_row, n1_col = next(hor)
-    assert n_row == row
+    p1 = Position(*next(hor))
+    assert p1.rank == start_pos.rank
 
-    n_row, n2_col = next(hor)
-    assert n_row == row
-    assert sorted((n1_col, n2_col)) == [col - 1, col + 1]
+    p2 = Position(*next(hor))
+    assert p2.rank == start_pos.rank
+    expected = [start_pos.file - 1, start_pos.file + 1]
+    assert sorted((p1.file, p2.file)) == expected
 
 
-@pytest.mark.parametrize("col", (MIN_POS, MAX_POS - 1))
-def test_horizontal_edge(col, piece):  # noqa: D103
-    piece._pos = Position(piece.position.row, col)
-    row, col = piece.position
+@pytest.mark.parametrize("p_file", (MIN_POS, MAX_POS - 1))
+def test_horizontal_edge(p_file, piece):  # noqa: D103
+    piece._pos = Position(piece.position.rank, p_file)
+    start_pos = piece.position
     hor = horizontal(piece)
-    n_row, n_col = next(hor)
-    diff = 1 if col == MIN_POS else -1
+    p1 = Position(*next(hor))
+    diff = 1 if p_file == MIN_POS else -1
 
-    assert n_col == col + diff
-    assert n_row == row
+    assert p1.file == start_pos.file + diff
+    assert p1.rank == start_pos.rank
 
-    n_row, n_col = next(hor)
-    assert n_col == col + diff * 2
-    assert n_row == row
+    p2 = Position(*next(hor))
+    assert p2.file == start_pos.file + diff * 2
+    assert p2.rank == start_pos.rank
 
 
 def test_vertical_center(piece):  # noqa: D103
-    row, col = piece.position
+    start_pos = piece.position
     ver = vertical(piece)
-    n1_row, n_col = next(ver)
-    assert n_col == col
+    p1 = Position(*next(ver))
+    assert p1.file == start_pos.file
 
-    n2_row, n_col = next(ver)
-    assert n_col == col
-    assert sorted((n1_row, n2_row)) == [row - 1, row + 1]
+    p2 = Position(*next(ver))
+    assert p2.file == start_pos.file
+    expected = [start_pos.rank - 1, start_pos.rank + 1]
+    assert sorted((p1.rank, p2.rank)) == expected
 
 
-@pytest.mark.parametrize("row", (MIN_POS, MAX_POS - 1))
-def test_vertical_edge(row, piece):  # noqa: D103
-    piece._pos = Position(row, piece.position.col)
-    row, col = piece.position
+@pytest.mark.parametrize("p_rank", (MIN_POS, MAX_POS - 1))
+def test_vertical_edge(p_rank, piece):  # noqa: D103
+    piece._pos = Position(p_rank, piece.position.file)
+    start_pos = piece.position
     ver = vertical(piece)
-    n_row, n_col = next(ver)
-    diff = 1 if row == MIN_POS else -1
+    p1 = Position(*next(ver))
+    diff = 1 if p_rank == MIN_POS else -1
 
-    assert n_col == col
-    assert n_row == row + diff
+    assert p1.file == start_pos.file
+    assert p1.rank == start_pos.rank + diff
 
-    n_row, n_col = next(ver)
-    assert n_col == col
-    assert n_row == row + diff * 2
+    p2 = Position(*next(ver))
+    assert p2.file == start_pos.file
+    assert p2.rank == start_pos.rank + diff * 2
 
 
 def _hor_ver_max_iters_helper(piece, it_f):  # noqa: D103

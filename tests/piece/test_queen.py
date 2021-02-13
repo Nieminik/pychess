@@ -18,6 +18,10 @@ COORDS_GROUP = (
 )
 
 
+INVALID_MOVES = [(1, 2), (1, -2), (-1, 2), (-1, -2)]
+INVALID_MOVES += list(map(reversed, INVALID_MOVES))
+
+
 @pytest.fixture
 def queen():  # noqa: D103
     grid = Grid()
@@ -36,15 +40,12 @@ def test_queen_ranges(coords, queen):  # noqa: D103
     assert sorted(exp_ranges) == sorted(queen.move_range)
 
 
-def test_queen_incorrect_move(queen):  # noqa: D103
+@pytest.mark.parametrize("wrong_pos_coords", INVALID_MOVES)
+def test_queen_incorrect_move(wrong_pos_coords, queen):  # noqa: D103
     assert not queen.move(queen.position)
-    invalid_moves = [(1, 2), (1, -2), (-1, 2), (-1, -2)]
-    invalid_moves += list(map(reversed, invalid_moves))
+    assert not queen.move(Position(*wrong_pos_coords) + queen.position)
 
-    for inv_move in invalid_moves:
-        assert not queen.move(Position(*inv_move) + queen.position)
-
-    assert not queen.move(Position(MAX_POS, queen.position.col))
-    assert not queen.move(Position(-1, queen.position.col))
-    assert not queen.move(Position(queen.position.row, MAX_POS))
-    assert not queen.move(Position(queen.position.row, -1))
+    assert not queen.move(Position(MAX_POS, queen.position.file))
+    assert not queen.move(Position(-1, queen.position.file))
+    assert not queen.move(Position(queen.position.rank, MAX_POS))
+    assert not queen.move(Position(queen.position.rank, -1))

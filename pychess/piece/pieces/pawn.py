@@ -37,12 +37,12 @@ class Pawn(Piece):
     @property
     def attack_range(self):
         """Get an attack range for pawn."""
-        row, col = self.position
-        n_row = row + self.get_direction(self).value
+        r, f = self.position
+        n_rank = r + self.get_direction(self).value
         rng = []
 
-        for n_col in (col + 1, col - 1):
-            pos = Position(n_row, n_col)
+        for n_file in (f + 1, f - 1):
+            pos = Position(n_rank, n_file)
             other = self.grid[pos]
             if pos.is_valid() and (not other or other.color != self.color):
                 rng.append(pos)
@@ -61,7 +61,7 @@ class Pawn(Piece):
             move_possible = other.color is not self.color
         else:
             dir_val = self.get_direction(self).value
-            an_passant_pos = Position(new_pos.row - dir_val, new_pos.col)
+            an_passant_pos = Position(new_pos.rank - dir_val, new_pos.file)
             an_passant_victim = self.grid[an_passant_pos]
             move_possible = Pawn._can_be_captured_an_passant(
                 an_passant_victim, self)
