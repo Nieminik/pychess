@@ -1,16 +1,38 @@
 """Tests for grid."""
 
 import pytest
-from pychess.grid import Grid
+from copy import deepcopy
+from pychess.grid import Grid, Side
 from pychess.piece.pieces.base import Piece
-import pychess.piece.pieces as piece_types
 from pychess.piece.position import Position
+import pychess.piece.pieces as piece_types
 from pychess.piece.color import Color
 
 
 @pytest.fixture
 def grid():  # noqa: D103
     return Grid()
+
+
+@pytest.fixture
+def grid_castle():  # noqa: D103
+    grid = Grid()
+    setup = {
+        Color.White: {
+            "a1": piece_types.Rook,
+            "h1": piece_types.Rook, "e1": piece_types.King
+        },
+        Color.Black: {
+            "a8": piece_types.Rook,
+            "h8": piece_types.Rook, "e8": piece_types.King
+        }
+    }
+    for color, notations in setup.items():
+        for notation, piece_cls in notations.items():
+            piece = piece_cls(Position.get_pos(notation), color)
+            grid.add_piece(piece)
+
+    return grid
 
 
 pieces_enemies_coords = (
@@ -54,12 +76,12 @@ def test_add_piece(grid, mocker):  # noqa: D103
     assert piece_mock.grid == grid
 
 
-@pytest.mark.parametrize("pieces_params", pieces_enemies_params)
+@ pytest.mark.parametrize("pieces_params", pieces_enemies_params)
 def test_enemies(grid, pieces_params):  # noqa: D103
     _enemies_test_helper(grid, pieces_params, True)
 
 
-@pytest.mark.parametrize("pieces_params", pieces_no_enemies_params)
+@ pytest.mark.parametrize("pieces_params", pieces_no_enemies_params)
 def test_no_enemies(grid, pieces_params):  # noqa: D103
     _enemies_test_helper(grid, pieces_params, False)
 
@@ -131,3 +153,62 @@ def test_can_move(grid):  # noqa: D103
     assert not grid.can_move(king.position, king.position + Position(0, 1))
     grid.report_capture(rook)
     assert grid.can_move(king.position, king.position + Position(0, 1))
+
+
+def test_castle_once(grid_castle):  # noqa: D103
+    grid = grid_castle
+    grid2 = deepcopy(grid)
+
+    assert grid.castle(color=Color.White, side=Side.Kingside)
+    assert not grid.castle(color=Color.White, side=Side.Queenside)
+
+    assert grid2.castle(color=Color.White, side=Side.Queenside)
+    assert not grid2.castle(color=Color.White, side=Side.Kingside)
+
+
+@ pytest.mark.parametrize("color", (Color.White, Color.Black))
+@ pytest.mark.parametrize("file_letter", "bcdfg")
+def test_castle_piece_between(color, file_letter, grid_castle):  # noqa: D103
+    rank = 1 if color is Color.White else 8
+
+    side = Side.Queenside if file_letter in "bcd" else Side.Kingside
+
+    pawn = piece_types.Pawn(
+        Position.get_pos(f"{file_letter}{rank}"), color=color.White)
+    grid_castle.add_piece(pawn)
+
+    assert not grid_castle.castle(color, side)
+
+
+@ pytest.mark.parametrize("color", (Color.White, Color.Black))
+@ pytest.mark.parametrize("side", (Side.Kingside, Side.Queenside))
+@ pytest.mark.parametrize("p_type", (piece_types.King, piece_types.Rook))
+def test_castle_moved(color, side, p_type, grid_castle):  # noqa: D103
+    pieces = grid_castle._pieces[p_type]
+    pieces = filter(lambda p: p.color == color, pieces)
+
+    piece = next(pieces)
+
+    # in case of a rook and kingside test, we want to skip the first rook
+    if piece.position.file == 0 and side is Side.Kingside:
+        piece = next(pieces)
+
+    piece.moves = 1
+    assert not grid_castle.castle(color, side)
+
+    piece.moves = 0
+    assert grid_castle.castle(color, side)
+
+
+@ pytest.mark.parametrize("color", (Color.White, Color.Black))
+@ pytest.mark.parametrize("side", (Side.Kingside, Side.Queenside))
+def test_castle_attacking_bishop(color, side, grid_castle):  # noqa: D103
+    kings = grid_castle._pieces[piece_types.King]
+    king = next(filter(lambda p: p.color == color, kings))
+    direction = 1 if color is Color.White else -1
+
+    bishop = piece_types.Bishop(
+        king.position + Position(direction, 0), color.inverted())
+
+    grid_castle.add_piece(bishop)
+    assert not grid_castle.castle(color, side)
