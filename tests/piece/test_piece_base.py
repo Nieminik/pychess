@@ -22,28 +22,28 @@ def test_init(piece):  # noqa: D103
 
 
 def test_move(piece):  # noqa: D103
-    r, c = piece.position
     moves = piece.moves
+    start_pos = piece.position
 
     piece._mv_range = list(product(range(MAX_POS), repeat=2))
 
-    assert not piece.move(Position(r, c))
+    assert not piece.move(piece.position)
     assert piece.moves == moves
 
-    assert piece.move(Position(r ^ 1, c ^ 1))
+    assert piece.move(piece.position + Position(1, 0))
     assert piece.moves == moves + 1
 
-    piece.move(Position(r, c))
+    piece.move(start_pos)
     assert piece.moves == moves + 2
 
 
 def test_move_in_check():  # noqa: D103
     grid = Grid()
-    r, c = 1, 1
-    king = piece_types.King(Position(r, c - 1))
-    rook = piece_types.Rook(Position(r, c + 1), color=Color.Black)
-    p1 = piece_types.Pawn(Position(r - 1, c))
-    p2 = piece_types.Pawn(Position(r - 1, c + 2))
+    r, f = 1, 1
+    king = piece_types.King(Position(r, f - 1))
+    rook = piece_types.Rook(Position(r, f + 1), color=Color.Black)
+    p1 = piece_types.Pawn(Position(r - 1, f))
+    p2 = piece_types.Pawn(Position(r - 1, f + 2))
 
     for piece in (king, rook, p1, p2):
         grid.add_piece(piece)

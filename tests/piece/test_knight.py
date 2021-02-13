@@ -5,6 +5,7 @@ import pytest
 from pychess.grid import Grid
 from pychess.piece.position import Position, MAX_POS
 from pychess.piece.color import Color
+from itertools import product
 import pychess.piece.pieces as pieces
 
 
@@ -14,6 +15,9 @@ COORDS_GROUP = (
     (0, 2),
     (7, 7)
 )
+
+
+INVALID_MOVES = list(product((-1, 0, 1), repeat=2))
 
 
 @pytest.fixture
@@ -39,7 +43,7 @@ def test_knight_ranges(color, coords, knight):  # noqa: D103
     moves = list(filter(lambda x: x.is_valid(), moves))
     assert sorted(knight.move_range) == sorted(moves)
 
-    pos = Position(knight.position.row + 1, knight.position.col + 2)
+    pos = knight.position + Position(1, 2)
     pawn = pieces.Pawn(pos, color=color)
     knight.grid.add_piece(pawn)
 
@@ -55,14 +59,12 @@ def test_knight_ranges(color, coords, knight):  # noqa: D103
     assert sorted(knight.move_range) == sorted(moves)
 
 
-def test_knight_incorrect_move(knight):  # noqa: D103
+@pytest.mark.parametrize("wrong_pos_coords", INVALID_MOVES)
+def test_knight_incorrect_move(wrong_pos_coords, knight):  # noqa: D103
     assert not knight.move(knight.position)
-    assert not knight.move(
-        Position(knight.position.row + 1, knight.position.col))
-    assert not knight.move(
-        Position(knight.position.row, knight.position.col + 1))
+    assert not knight.move(knight.position + Position(*wrong_pos_coords))
 
-    assert not knight.move(Position(MAX_POS, knight.position.col))
-    assert not knight.move(Position(-1, knight.position.col))
-    assert not knight.move(Position(knight.position.row, MAX_POS))
-    assert not knight.move(Position(knight.position.row, -1))
+    assert not knight.move(Position(MAX_POS, knight.position.file))
+    assert not knight.move(Position(-1, knight.position.file))
+    assert not knight.move(Position(knight.position.rank, MAX_POS))
+    assert not knight.move(Position(knight.position.rank, -1))

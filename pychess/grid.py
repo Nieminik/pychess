@@ -96,8 +96,8 @@ class Grid(object):
             (x for x in grid._pieces[piece_types.King] if x.color is color)
         )
 
-        rook_c = 7 if side is Side.Kingside else 0
-        rook = grid.fields[Position(king.position.row, rook_c)]
+        rook_f = 7 if side is Side.Kingside else 0
+        rook = grid.fields[Position(king.position.rank, rook_f)]
 
         if not rook or not isinstance(rook, piece_types.Rook):
             return False
@@ -105,8 +105,8 @@ class Grid(object):
         if king.moves or rook.moves:
             return False
 
-        direction = int(math.copysign(1, rook_c - king.position.col))
-        move_pos = Position(king.position.row, king.position.col + direction)
+        direction = int(math.copysign(1, rook_f - king.position.file))
+        move_pos = Position(king.position.rank, king.position.file + direction)
 
         if grid[move_pos] or not rook.move(move_pos):
             return False
@@ -114,7 +114,7 @@ class Grid(object):
         grid._pieces[piece_types.Rook].remove(rook)
         for i in range(2):
             moved = king.move(
-                Position(king.position.row, king.position.col + direction))
+                Position(king.position.rank, king.position.file + direction))
             if not moved:
                 return False
 

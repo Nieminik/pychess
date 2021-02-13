@@ -41,15 +41,15 @@ def test_king_ranges(coords, king):  # noqa: D103
     assert sorted(exp_ranges) == sorted(king.move_range)
 
 
-@pytest.mark.parametrize("wrong_move_pos", INVALID_MOVES)
-def test_king_incorrect_move(wrong_move_pos, king):  # noqa: D103
+@pytest.mark.parametrize("wrong_pos_coords", INVALID_MOVES)
+def test_king_incorrect_move(wrong_pos_coords, king):  # noqa: D103
     assert not king.move(king.position)
-    assert not king.move(Position(*wrong_move_pos) + king.position)
+    assert not king.move(Position(*wrong_pos_coords) + king.position)
 
-    assert not king.move(Position(MAX_POS, king.position.col))
-    assert not king.move(Position(-1, king.position.col))
-    assert not king.move(Position(king.position.row, MAX_POS))
-    assert not king.move(Position(king.position.row, -1))
+    assert not king.move(Position(MAX_POS, king.position.file))
+    assert not king.move(Position(-1, king.position.file))
+    assert not king.move(Position(king.position.rank, MAX_POS))
+    assert not king.move(Position(king.position.rank, -1))
 
 
 @pytest.mark.parametrize("color", (Color.White, Color.Black))

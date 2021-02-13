@@ -18,6 +18,9 @@ COORDS_GROUP = (
 )
 
 
+INVALID_MOVES = [(1, 1), (-1, -1), (1, -1), (-1, 1)]
+
+
 @pytest.fixture
 def rook():  # noqa: D103
     grid = Grid()
@@ -37,14 +40,12 @@ def test_rook_ranges(coords, rook):  # noqa: D103
     assert sorted(test_range) == sorted(rook.move_range)
 
 
-def test_rook_incorrect_move(rook):  # noqa: D103
+@pytest.mark.parametrize("wrong_pos_coords", INVALID_MOVES)
+def test_rook_incorrect_move(wrong_pos_coords, rook):  # noqa: D103
     assert not rook.move(rook.position)
-    assert not rook.move(
-        Position(rook.position.row + 1, rook.position.col + 1))
-    assert not rook.move(
-        Position(rook.position.row - 1, rook.position.col + 1))
+    assert not rook.move(rook.position + Position(*wrong_pos_coords))
 
-    assert not rook.move(Position(MAX_POS, rook.position.col))
-    assert not rook.move(Position(-1, rook.position.col))
-    assert not rook.move(Position(rook.position.row, MAX_POS))
-    assert not rook.move(Position(rook.position.row, -1))
+    assert not rook.move(Position(MAX_POS, rook.position.file))
+    assert not rook.move(Position(-1, rook.position.file))
+    assert not rook.move(Position(rook.position.rank, MAX_POS))
+    assert not rook.move(Position(rook.position.rank, -1))
