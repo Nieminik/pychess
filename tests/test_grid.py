@@ -143,18 +143,6 @@ def test_in_check(grid):  # noqa: D103
     assert not grid.own_king_in_check(king)
 
 
-def test_can_move(grid):  # noqa: D103
-    king = piece_types.King(Position(0, 0))
-    rook = piece_types.Rook(Position(3, 1), Color.Black)
-    grid.add_piece(king)
-    grid.add_piece(rook)
-    assert grid.can_move(king.position, king.position + Position(1, 0))
-
-    assert not grid.can_move(king.position, king.position + Position(0, 1))
-    grid.report_capture(rook)
-    assert grid.can_move(king.position, king.position + Position(0, 1))
-
-
 def test_castle_once(grid_castle):  # noqa: D103
     grid = grid_castle
     grid2 = deepcopy(grid)
@@ -193,10 +181,16 @@ def test_castle_moved(color, side, p_type, grid_castle):  # noqa: D103
     if piece.position.file == 0 and side is Side.Kingside:
         piece = next(pieces)
 
-    piece.moves = 1
+    pos = piece.position
+    piece.move(pos + Position(0, 1))
+    piece.move(pos + Position(0, -1))
+    piece.move(pos)
+
     assert not grid_castle.castle(color, side)
 
-    piece.moves = 0
+    while piece.moves:
+        piece.revert_move()
+
     assert grid_castle.castle(color, side)
 
 
@@ -245,3 +239,74 @@ def test_revert_move(grid):  # noqa: D103
         snapshot = grids.pop()
         assert grid.revert_move()
         assert grid == snapshot
+
+
+@pytest.mark.parametrize("color", (Color.White, Color.Black))
+def test_move_king_attacked_fields(color, grid):  # noqa: D103
+    king = piece_types.King(Position(1, 1))
+    king.color = color
+    grid.add_piece(king)
+
+    start_pos = king.position
+
+    rook = piece_types.Rook(
+        king.position + Position(2, 1),
+        color=color.inverted())
+    grid.add_piece(rook)
+
+    move_pos = king.position + Position(0, 1)
+    assert not grid.move(king.position, move_pos)
+
+    rook.color = rook.color.inverted()
+    assert grid.move(king.position, move_pos)
+
+    rook.color = rook.color.inverted()
+    assert grid.own_king_in_check(king)
+    assert grid.move(king.position, start_pos)
+
+    bishop = piece_types.Bishop(
+        king.position + Position(0, 1),
+        color=color.inverted())
+    grid.add_piece(bishop)
+
+    move_pos = start_pos + Position(-1, 0)
+    assert not grid.move(king.position, move_pos)
+    assert not grid.move(king.position, bishop.position)
+    assert grid.move(king.position, bishop.position + Position(-1, 0))
+
+    bishop.color = bishop.color.inverted()
+    assert grid.move(king.position, move_pos)
+    assert grid.move(king.position, start_pos)
+
+    grid.report_capture(rook)
+    bishop.color = bishop.color.inverted()
+    assert grid.move(king.position, bishop.position)
+
+
+def test_move_in_check():  # noqa: D103
+    grid = Grid()
+    r, f = 1, 1
+    king = piece_types.King(Position(r, f - 1))
+    rook = piece_types.Rook(Position(r, f + 1), color=Color.Black)
+    p1 = piece_types.Pawn(Position(r - 1, f))
+    p2 = piece_types.Pawn(Position(r - 1, f + 2))
+
+    for piece in (king, rook, p1, p2):
+        grid.add_piece(piece)
+
+    assert grid.own_king_in_check(king)
+
+    assert not grid.move(
+        p2.position, p2.position + Position(1, 0))
+
+    assert grid.move(
+        p1.position, p1.position + Position(1, 0))
+    assert not grid.own_king_in_check(king)
+
+    p1.position += Position(-1, 0)
+
+    print(king, p2, rook)
+    assert grid.own_king_in_check(king)
+    assert grid.move(p2.position, rook.position)
+
+    assert not grid.own_king_in_check(king)

@@ -3,7 +3,6 @@
 import pytest
 
 from pychess.grid import Grid
-from pychess.piece.color import Color
 from pychess.piece.position import Position, MAX_POS
 import pychess.piece.pieces as pieces
 
@@ -32,7 +31,7 @@ def king():  # noqa: D103
 
 @pytest.mark.parametrize("coords", COORDS_GROUP)
 def test_king_ranges(coords, king):  # noqa: D103
-    king._pos = Position(*coords)
+    king.position = Position(*coords)
 
     exp_ranges = chain(
         diagonal(king, 4), horizontal(king, 2), vertical(king, 2))
@@ -50,42 +49,3 @@ def test_king_incorrect_move(wrong_pos_coords, king):  # noqa: D103
     assert not king.move(Position(-1, king.position.file))
     assert not king.move(Position(king.position.rank, MAX_POS))
     assert not king.move(Position(king.position.rank, -1))
-
-
-@pytest.mark.parametrize("color", (Color.White, Color.Black))
-def test_king_attacked_move_fields(color, king):  # noqa: D103
-    grid = king.grid
-    king.color = color
-    start_pos = king.position
-
-    rook = pieces.Rook(
-        king.position + Position(2, 1),
-        color=color.inverted())
-    grid.add_piece(rook)
-
-    move_pos = king.position + Position(0, 1)
-    assert not king.move(move_pos)
-
-    rook.color = rook.color.inverted()
-    assert king.move(move_pos)
-
-    rook.color = rook.color.inverted()
-    assert king.move(start_pos)
-
-    bishop = pieces.Bishop(
-        king.position + Position(0, 1),
-        color=color.inverted())
-    grid.add_piece(bishop)
-
-    move_pos = start_pos + Position(-1, 0)
-    assert not king.move(move_pos)
-    assert not king.move(bishop.position)
-    assert king.move(bishop.position + Position(-1, 0))
-
-    bishop.color = bishop.color.inverted()
-    assert king.move(move_pos)
-    assert king.move(start_pos)
-
-    grid.report_capture(rook)
-    bishop.color = bishop.color.inverted()
-    assert king.move(bishop.position)

@@ -31,7 +31,7 @@ def knight():  # noqa: D103
 @pytest.mark.parametrize("color", (Color.White, Color.Black))
 @pytest.mark.parametrize("coords", COORDS_GROUP)
 def test_knight_ranges(color, coords, knight):  # noqa: D103
-    knight._pos = Position(*coords)
+    knight.position = Position(*coords)
     knight.color = color
 
     assert sorted(knight.move_range) == sorted(knight.attack_range)
