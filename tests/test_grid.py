@@ -212,3 +212,36 @@ def test_castle_attacking_bishop(color, side, grid_castle):  # noqa: D103
 
     grid_castle.add_piece(bishop)
     assert not grid_castle.castle(color, side)
+
+
+def test_grid_eq(grid_castle):  # noqa: D103
+    g2 = deepcopy(grid_castle)
+    assert grid_castle == g2
+
+    g2.report_capture(next(iter(g2.fields.values())))
+    assert grid_castle != g2
+
+
+def test_revert_move(grid):  # noqa: D103
+    grids = []
+    p1 = piece_types.Pawn(Position.get_pos("a2"))
+    p2 = piece_types.Pawn(Position.get_pos("b2"))
+    grid.add_piece(p1)
+    grid.add_piece(p2)
+
+    assert not grid.revert_move()
+
+    grid.move(p1.position, p1.position + Position(2, 0))
+    grids.append(deepcopy(grid))
+    grid.move(p2.position, p2.position + Position(1, 0))
+    grids.append(deepcopy(grid))
+    grid.move(p1.position, p1.position + Position(1, 0))
+    grids.append(deepcopy(grid))
+    grid.move(p2.position, p2.position + Position(1, 0))
+
+    assert grids[-1] != grid
+
+    while grids:
+        snapshot = grids.pop()
+        assert grid.revert_move()
+        assert grid == snapshot

@@ -7,6 +7,7 @@ from pychess.piece.pieces.base import Piece
 from pychess.piece.position import Position, MAX_POS
 from pychess.piece.color import Color
 from pychess.grid import Grid
+from copy import deepcopy
 import pychess.piece.pieces as piece_types
 
 
@@ -61,3 +62,15 @@ def test_move_in_check():  # noqa: D103
     assert grid.move(p2.position, rook.position)
 
     assert not grid.own_king_in_check(king)
+
+
+def test_piece_eq(piece):
+    other = deepcopy(piece)
+    assert other == piece
+
+    other.color = other.color.inverted()
+    assert other != piece
+
+    other = deepcopy(piece)
+    other._pos = other.position + Position(1, 1)
+    assert other != piece
