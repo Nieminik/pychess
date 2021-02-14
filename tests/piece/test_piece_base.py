@@ -5,10 +5,7 @@ import pytest
 
 from pychess.piece.pieces.base import Piece
 from pychess.piece.position import Position, MAX_POS
-from pychess.piece.color import Color
-from pychess.grid import Grid
 from copy import deepcopy
-import pychess.piece.pieces as piece_types
 
 
 @pytest.fixture
@@ -38,32 +35,6 @@ def test_move(piece):  # noqa: D103
     assert piece.moves == moves + 2
 
 
-def test_move_in_check():  # noqa: D103
-    grid = Grid()
-    r, f = 1, 1
-    king = piece_types.King(Position(r, f - 1))
-    rook = piece_types.Rook(Position(r, f + 1), color=Color.Black)
-    p1 = piece_types.Pawn(Position(r - 1, f))
-    p2 = piece_types.Pawn(Position(r - 1, f + 2))
-
-    for piece in (king, rook, p1, p2):
-        grid.add_piece(piece)
-
-    assert grid.own_king_in_check(king)
-
-    assert not p2.move(p2.position + Position(1, 0))
-
-    assert p1.move(p1.position + Position(1, 0))
-    assert not grid.own_king_in_check(king)
-
-    p1._pos += Position(-1, 0)
-
-    assert grid.own_king_in_check(king)
-    assert grid.move(p2.position, rook.position)
-
-    assert not grid.own_king_in_check(king)
-
-
 def test_piece_eq(piece):  # noqa: D103
     other = deepcopy(piece)
     assert other == piece
@@ -72,5 +43,17 @@ def test_piece_eq(piece):  # noqa: D103
     assert other != piece
 
     other = deepcopy(piece)
-    other._pos = other.position + Position(1, 1)
+    other.position = other.position + Position(1, 1)
     assert other != piece
+
+
+def test_revert_move(piece):  # noqa: D103
+    positions = [piece.position]
+
+    for _ in range(3):
+        piece.move(piece.position + Position(1, 0))
+        positions.append(piece.position)
+
+    while positions:
+        assert positions.pop() == piece.position
+        piece.revert_move()

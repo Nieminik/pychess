@@ -32,7 +32,7 @@ def queen():  # noqa: D103
 
 @pytest.mark.parametrize("coords", COORDS_GROUP)
 def test_queen_ranges(coords, queen):  # noqa: D103
-    queen._pos = Position(*coords)
+    queen.position = Position(*coords)
 
     exp_ranges = chain(diagonal(queen), horizontal(queen), vertical(queen))
 

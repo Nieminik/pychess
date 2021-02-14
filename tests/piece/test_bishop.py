@@ -29,7 +29,7 @@ def bishop():  # noqa: D103
 
 @pytest.mark.parametrize("coords", COORDS_GROUP)
 def test_bishop_ranges(coords, bishop):  # noqa: D103
-    bishop._pos = Position(*coords)
+    bishop.position = Position(*coords)
 
     assert sorted(bishop.move_range) == sorted(bishop.attack_range)
     assert sorted(diagonal(bishop)) == sorted(bishop.move_range)

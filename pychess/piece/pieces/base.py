@@ -8,20 +8,24 @@ class Piece(object):
     """Generic piece class."""
 
     def __init__(self, position, color=Color.White):
-        self._pos = Position(*position)
+        self.position = Position(*position)
         self.color = color
         self.grid = None
-        self.moves = 0
         self.move_attacks = True
         self._mv_range = []
+        self.previous_positions = []
 
     def __eq__(self, other):  # noqa: D105
         eq = isinstance(self, type(other))
-        eq *= self._pos == other._pos
+        eq *= self.position == other.position
         eq *= self.color == other.color
         eq *= self.grid == other.grid
         eq *= self.moves == other.moves
         return eq
+
+    @property
+    def moves(self):  # noqa: D102
+        return len(self.previous_positions)
 
     @property
     def move_range(self):  # noqa: D102
@@ -31,28 +35,30 @@ class Piece(object):
     def attack_range(self):  # noqa: D102
         return self.move_range
 
-    @property
-    def position(self):  # noqa: D102
-        return self._pos
-
     def move(self, position):  # noqa: D102
         new_pos = Position(*position)
 
         if not new_pos.is_valid():
             return False
 
+        if position == self.position:
+            return False
+
         if new_pos not in self.move_range + self.attack_range:
             return False
 
-        old_pos = self.position
-        if position == self._pos:
+        self.previous_positions.append(self.position)
+        self.position = position
+        return True
+
+    def revert_move(self):
+        """Revert one move."""
+        try:
+            pos = self.previous_positions.pop()
+        except IndexError:
             return False
 
-        if self.grid and not self.grid.can_move(old_pos, new_pos):
-            return False
-
-        self.moves += 1
-        self._pos = position
+        self.position = pos
         return True
 
     def __repr__(self):  # noqa: D105

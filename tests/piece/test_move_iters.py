@@ -36,7 +36,7 @@ start_positions = (
 
 
 def _basic_iters_test_helper(piece, pos, func, transformation):
-    piece._pos = pos
+    piece.position = pos
     p_rank, p_file = piece.position
     for r, f in func(piece):
         p_rank, p_file = transformation(p_rank, p_file)
@@ -78,7 +78,7 @@ def test_horizontal_center(piece):  # noqa: D103
 
 @pytest.mark.parametrize("p_file", (MIN_POS, MAX_POS - 1))
 def test_horizontal_edge(p_file, piece):  # noqa: D103
-    piece._pos = Position(piece.position.rank, p_file)
+    piece.position = Position(piece.position.rank, p_file)
     start_pos = piece.position
     hor = horizontal(piece)
     p1 = Position(*next(hor))
@@ -106,7 +106,7 @@ def test_vertical_center(piece):  # noqa: D103
 
 @pytest.mark.parametrize("p_rank", (MIN_POS, MAX_POS - 1))
 def test_vertical_edge(p_rank, piece):  # noqa: D103
-    piece._pos = Position(p_rank, piece.position.file)
+    piece.position = Position(p_rank, piece.position.file)
     start_pos = piece.position
     ver = vertical(piece)
     p1 = Position(*next(ver))
