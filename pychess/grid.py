@@ -24,6 +24,7 @@ class Grid(object):
     def __init__(self):  # noqa: D103
         self._pieces = {}
         self.captured = []
+        self.snapshots = []
 
     def __getitem__(self, item):  # noqa: D105
         return self.fields[item]
@@ -35,6 +36,16 @@ class Grid(object):
         for k, v in self.__dict__.items():
             setattr(result, k, deepcopy(v, memo))
         return result
+
+    def __eq__(self, other):  # noqa: D105
+        eq = True
+        for piece in self.fields:
+            eq *= piece in other.fields
+
+        for piece in other.fields:
+            eq *= piece in self.fields
+
+        return eq
 
     @property
     def pieces(self):  # noqa: D102
@@ -76,11 +87,15 @@ class Grid(object):
         """Move piece."""
         piece = self[old_pos]
         other = self[new_pos]
+        snapshot = deepcopy(self)
 
         move_successful = piece.move(new_pos)
 
         if other and move_successful:
             self.report_capture(other)
+
+        if move_successful:
+            self.snapshots.append(snapshot)
 
         return move_successful
 
@@ -135,3 +150,16 @@ class Grid(object):
                 chain.from_iterable([e.attack_range for e in enemies]))
             return k.position in attacks
         return False
+
+    def revert_move(self):
+        """Revert one move."""
+        try:
+            snapshot = self.snapshots[-1]
+        except IndexError:
+            return False
+
+        self._pieces = snapshot._pieces
+        self.snapshots = snapshot.snapshots
+        self.captured = snapshot.captured
+
+        return True

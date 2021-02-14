@@ -15,6 +15,14 @@ class Piece(object):
         self.move_attacks = True
         self._mv_range = []
 
+    def __eq__(self, other):  # noqa: D105
+        eq = isinstance(self, type(other))
+        eq *= self._pos == other._pos
+        eq *= self.color == other.color
+        eq *= self.grid == other.grid
+        eq *= self.moves == other.moves
+        return eq
+
     @property
     def move_range(self):  # noqa: D102
         return self._mv_range
