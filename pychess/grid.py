@@ -61,27 +61,14 @@ class Grid(object):
         cls_pieces = self._pieces.setdefault(piece.__class__, [])
         cls_pieces.append(piece)
 
+        if piece in self.captured:
+            self.captured.remove(piece)
+
     def get_enemies(self, piece):
         """Get enemies of given piece."""
         inverted_color = piece.color.inverted()
 
         return [x for x in self.pieces if x.color is inverted_color]
-
-    def can_move(self, old_pos, new_pos):
-        """Check if king will be in check after the move."""
-        piece = self[old_pos]
-        other = self[new_pos]
-        if other:
-            self._pieces[type(other)].remove(other)
-        piece._pos = new_pos
-
-        in_check = self.own_king_in_check(piece)
-
-        if other:
-            self._pieces[type(other)].append(other)
-        piece._pos = old_pos
-
-        return not in_check
 
     def move(self, old_pos, new_pos):
         """Move piece."""
@@ -91,8 +78,14 @@ class Grid(object):
 
         move_successful = piece.move(new_pos)
 
-        if other and move_successful:
-            self.report_capture(other)
+        removed = other and move_successful and self.report_capture(other)
+
+        in_check = self.own_king_in_check(piece)
+        if move_successful and in_check:
+            piece.revert_move()
+            move_successful = False
+            if removed:
+                self.add_piece(other)
 
         if move_successful:
             self.snapshots.append(snapshot)
@@ -103,6 +96,7 @@ class Grid(object):
         """Keep track of captured pieces."""
         self.captured.append(piece)
         self._pieces[piece.__class__].remove(piece)
+        return True
 
     def castle(self, color, side=Side.Kingside):
         """Perform a castle."""
@@ -121,15 +115,15 @@ class Grid(object):
             return False
 
         direction = int(math.copysign(1, rook_f - king.position.file))
-        move_pos = Position(king.position.rank, king.position.file + direction)
+        move_pos = king.position + Position(0, direction)
 
-        if grid[move_pos] or not rook.move(move_pos):
+        if grid[move_pos] or not self.move(rook.position, move_pos):
             return False
 
         grid._pieces[piece_types.Rook].remove(rook)
         for i in range(2):
-            moved = king.move(
-                Position(king.position.rank, king.position.file + direction))
+            moved = grid.move(
+                king.position, king.position + Position(0, direction))
             if not moved:
                 return False
 
@@ -154,12 +148,11 @@ class Grid(object):
     def revert_move(self):
         """Revert one move."""
         try:
-            snapshot = self.snapshots[-1]
+            snapshot = self.snapshots.pop()
         except IndexError:
             return False
 
         self._pieces = snapshot._pieces
-        self.snapshots = snapshot.snapshots
         self.captured = snapshot.captured
 
         return True
