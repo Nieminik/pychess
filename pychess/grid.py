@@ -37,7 +37,7 @@ class Grid(object):
             setattr(result, k, deepcopy(v, memo))
         return result
 
-    def __eq__(self, other):
+    def __eq__(self, other):  # noqa: D105
         eq = True
         for piece in self.fields:
             eq *= piece in other.fields

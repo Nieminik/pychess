@@ -64,7 +64,7 @@ def test_move_in_check():  # noqa: D103
     assert not grid.own_king_in_check(king)
 
 
-def test_piece_eq(piece):
+def test_piece_eq(piece):  # noqa: D103
     other = deepcopy(piece)
     assert other == piece
 
