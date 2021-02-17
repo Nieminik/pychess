@@ -11,6 +11,7 @@ from pychess.piece.position import Position
 import pychess.piece.pieces as piece_types
 
 from enum import Enum, auto
+from functools import wraps
 
 
 class Side(Enum):  # noqa: D101
@@ -47,6 +48,16 @@ class Grid(object):
 
         return eq
 
+    def _save_snapshot(f):
+        @wraps(f)
+        def wrapper(self, *args, **kwargs):
+            snapshot = deepcopy(self)
+            return_value = f(self, *args, **kwargs)
+            if return_value:
+                self.snapshots.append(snapshot)
+            return return_value
+        return wrapper
+
     @property
     def pieces(self):  # noqa: D102
         return chain.from_iterable(self._pieces.values())
@@ -70,11 +81,11 @@ class Grid(object):
 
         return [x for x in self.pieces if x.color is inverted_color]
 
+    @_save_snapshot
     def move(self, old_pos, new_pos):
         """Move piece."""
         piece = self[old_pos]
         other = self[new_pos]
-        snapshot = deepcopy(self)
 
         move_successful = piece.move(new_pos)
 
@@ -87,9 +98,6 @@ class Grid(object):
             if removed:
                 self.add_piece(other)
 
-        if move_successful:
-            self.snapshots.append(snapshot)
-
         return move_successful
 
     def report_capture(self, piece):
@@ -98,6 +106,7 @@ class Grid(object):
         self._pieces[piece.__class__].remove(piece)
         return True
 
+    @_save_snapshot
     def castle(self, color, side=Side.Kingside):
         """Perform a castle."""
         grid = deepcopy(self)
@@ -106,7 +115,7 @@ class Grid(object):
         )
 
         rook_f = 7 if side is Side.Kingside else 0
-        rook = grid.fields[Position(king.position.rank, rook_f)]
+        rook = grid[Position(king.position.rank, rook_f)]
 
         if not rook or not isinstance(rook, piece_types.Rook):
             return False
@@ -121,7 +130,7 @@ class Grid(object):
             return False
 
         grid._pieces[piece_types.Rook].remove(rook)
-        for i in range(2):
+        for _ in range(2):
             moved = grid.move(
                 king.position, king.position + Position(0, direction))
             if not moved:
