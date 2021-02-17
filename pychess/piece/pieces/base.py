@@ -19,7 +19,6 @@ class Piece(object):
         eq = isinstance(self, type(other))
         eq *= self.position == other.position
         eq *= self.color == other.color
-        eq *= self.grid == other.grid
         eq *= self.moves == other.moves
         return eq
 

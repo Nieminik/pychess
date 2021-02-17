@@ -39,11 +39,11 @@ class Grid(object):
 
     def __eq__(self, other):  # noqa: D105
         eq = True
-        for piece in self.fields:
-            eq *= piece in other.fields
+        for piece in self.pieces:
+            eq *= piece in other.pieces
 
-        for piece in other.fields:
-            eq *= piece in self.fields
+        for piece in other.pieces:
+            eq *= piece in self.pieces
 
         return eq
 
