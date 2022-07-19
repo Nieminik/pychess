@@ -76,12 +76,12 @@ def test_add_piece(grid, mocker):  # noqa: D103
     assert piece_mock.grid == grid
 
 
-@ pytest.mark.parametrize("pieces_params", pieces_enemies_params)
+@pytest.mark.parametrize("pieces_params", pieces_enemies_params)
 def test_enemies(grid, pieces_params):  # noqa: D103
     _enemies_test_helper(grid, pieces_params, True)
 
 
-@ pytest.mark.parametrize("pieces_params", pieces_no_enemies_params)
+@pytest.mark.parametrize("pieces_params", pieces_no_enemies_params)
 def test_no_enemies(grid, pieces_params):  # noqa: D103
     _enemies_test_helper(grid, pieces_params, False)
 
@@ -154,8 +154,8 @@ def test_castle_once(grid_castle):  # noqa: D103
     assert not grid2.castle(color=Color.White, side=Side.Kingside)
 
 
-@ pytest.mark.parametrize("color", (Color.White, Color.Black))
-@ pytest.mark.parametrize("file_letter", "bcdfg")
+@pytest.mark.parametrize("color", (Color.White, Color.Black))
+@pytest.mark.parametrize("file_letter", "bcdfg")
 def test_castle_piece_between(color, file_letter, grid_castle):  # noqa: D103
     rank = 1 if color is Color.White else 8
 
@@ -168,9 +168,9 @@ def test_castle_piece_between(color, file_letter, grid_castle):  # noqa: D103
     assert not grid_castle.castle(color, side)
 
 
-@ pytest.mark.parametrize("color", (Color.White, Color.Black))
-@ pytest.mark.parametrize("side", (Side.Kingside, Side.Queenside))
-@ pytest.mark.parametrize("p_type", (piece_types.King, piece_types.Rook))
+@pytest.mark.parametrize("color", (Color.White, Color.Black))
+@pytest.mark.parametrize("side", (Side.Kingside, Side.Queenside))
+@pytest.mark.parametrize("p_type", (piece_types.King, piece_types.Rook))
 def test_castle_moved(color, side, p_type, grid_castle):  # noqa: D103
     pieces = grid_castle._pieces[p_type]
     pieces = filter(lambda p: p.color == color, pieces)
@@ -194,8 +194,8 @@ def test_castle_moved(color, side, p_type, grid_castle):  # noqa: D103
     assert grid_castle.castle(color, side)
 
 
-@ pytest.mark.parametrize("color", (Color.White, Color.Black))
-@ pytest.mark.parametrize("side", (Side.Kingside, Side.Queenside))
+@pytest.mark.parametrize("color", (Color.White, Color.Black))
+@pytest.mark.parametrize("side", (Side.Kingside, Side.Queenside))
 def test_castle_attacking_bishop(color, side, grid_castle):  # noqa: D103
     kings = grid_castle._pieces[piece_types.King]
     king = next(filter(lambda p: p.color == color, kings))
