@@ -44,3 +44,6 @@ def test_bishop_incorrect_move(wrong_pos_coords, bishop):  # noqa: D103
     assert not bishop.move(Position(-1, bishop.position.file))
     assert not bishop.move(Position(bishop.position.rank, MAX_POS))
     assert not bishop.move(Position(bishop.position.rank, -1))
+
+def test_ci():
+    assert False
