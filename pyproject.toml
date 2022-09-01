@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "pychess"
+version = "0.1.0"
+description = ""
+authors = ["Dominik Niemiro <dniemiro@protonmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.1.2"
+pytest-mock = "^3.8.2"
+tox = "^3.25.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
