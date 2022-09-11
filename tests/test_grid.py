@@ -154,6 +154,21 @@ def test_castle_once(grid_castle):  # noqa: D103
     assert not grid2.castle(color=Color.White, side=Side.Kingside)
 
 
+def test_castle_rook_not_there(grid_castle):  # noqa: D103
+    grid = grid_castle
+    grid[Position.get_pos("h1")].position = None
+
+    assert not grid.castle(color=Color.White, side=Side.Kingside)
+
+
+def test_castle_not_a_rook(grid_castle):  # noqa: D103
+    grid = grid_castle
+    grid[Position.get_pos("h1")].position = None
+    grid.add_piece(piece_types.Pawn(Position.get_pos("h1")))
+
+    assert not grid.castle(color=Color.White, side=Side.Kingside)
+
+
 @ pytest.mark.parametrize("color", (Color.White, Color.Black))
 @ pytest.mark.parametrize("file_letter", "bcdfg")
 def test_castle_piece_between(color, file_letter, grid_castle):  # noqa: D103
