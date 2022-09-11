@@ -5,4 +5,4 @@ from pprint import pprint
 
 
 if __name__ == "__main__":
-    pprint(get_starting_grid().fields)
+    pprint(list(get_starting_grid().fields.values()))

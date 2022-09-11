@@ -48,6 +48,7 @@ class Grid(object):
 
         return eq
 
+    @staticmethod
     def _save_snapshot(f):
         @wraps(f)
         def wrapper(self, *args, **kwargs):
